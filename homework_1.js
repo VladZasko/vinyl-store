@@ -179,36 +179,33 @@ console.log(resolveAfter('Resolve'));
 
 /*---11---*/
 
-const exampleArrayPromises = [
-    new Promise((res, rej) => {
+function examplePromiseForEx11(promiseName, time) {
+    return new Promise(resolve => {
         setTimeout(() => {
-            const promise1 = "Promise-1";
-            res(`${promise1} выполнен!`);
-        }, 5000);
-    }),
-    new Promise((res, rej) => {
-        setTimeout(() => {
-            const promise2 = "Promise-2";
-            res(`${promise2} выполнен!`);
-        }, 10000);
-    }),
-    new Promise((res, rej) => {
-        setTimeout(() => {
-            const promise3 = "Promise-3";
-            res(`${promise3} выполнен!`);
-        }, 3000);
-    })
+            resolve(`${promiseName} выполнен!`);
+        }, time);
+    });
+}
+
+const arrayPromises = [
+    () => examplePromiseForEx11("Promise-1", 5000),
+    () => examplePromiseForEx11("Promise-2", 10000),
+    () => examplePromiseForEx11("Promise-3", 3000)
 ];
 
-async function runPromisesInSeries(arrayPromise) {
+async function runPromisesInSeries(arrayPromises) {
     const results = [];
 
-    for (let i = 0; i < arrayPromise.length; i++) {
-        const result = await arrayPromise[i];
+    for (const promise of arrayPromises) {
+        const result = await promise();
         results.push(result);
     }
 
     return results;
 }
 
-runPromisesInSeries(exampleArrayPromises).then(results => console.log(results))
+runPromisesInSeries(arrayPromises)
+    .then(results => {
+        console.log("Results:", results);
+    });
+
