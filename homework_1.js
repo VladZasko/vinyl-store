@@ -1,12 +1,28 @@
 /*---1---*/
-const example1 = 8;
-const example2 = 610;
+/*---Fix---*/
+
+const example1 = 0;
+const example2 = 1;
+const example3 = 2;
+const example4 = 3;
+const example5 = 8;
+const example6 = 610;
 
 const fibonacci = (number) => {
     const fibNumber = [];
-    let n1 = 0, n2 = 1, nextTerm;
+    let n1 = 1, n2 = 2, nextTerm;
 
-    for (let i = 1; i <= number; i++) {
+    if (number === 0) {
+        fibNumber.push(0);
+        return fibNumber;
+    } else if (number === 1) {
+        fibNumber.push(0, 1);
+        return fibNumber;
+    }
+
+    fibNumber.push(0, 1);
+
+    for (let i = 2; i <= number; i++) {
         if (n1 + n2 <= number){
             fibNumber.push(n1);
             nextTerm = n1 + n2;
@@ -21,6 +37,10 @@ const fibonacci = (number) => {
 
 console.log(fibonacci(example1));
 console.log(fibonacci(example2));
+console.log(fibonacci(example3));
+console.log(fibonacci(example4));
+console.log(fibonacci(example5));
+console.log(fibonacci(example6));
 
 /*---2---*/
 
@@ -47,12 +67,13 @@ console.log(findUnique(example1Array1, example1Array2))
 console.log(findUnique(example2Array1, example2Array2));
 
 /*---3---*/
+/*---Fix---*/
 
 function caseInsensitiveSearch(string, search)
 {
     let result = string.search(new RegExp(search, "i"));
 
-    if (result>0)
+    if (result !== -1)
         return 'Matched';
     else
         return 'Not Matched';
@@ -60,6 +81,7 @@ function caseInsensitiveSearch(string, search)
 
 console.log(caseInsensitiveSearch('JavaScript Exercises', 'exercises'));
 console.log(caseInsensitiveSearch('JavaScript Exercises', 'Exercisess'));
+console.log(caseInsensitiveSearch('JavaScript Exercises', 'JavaScript'));
 
 /*---4---*/
 
@@ -152,28 +174,30 @@ function flatArray (arr){
 console.log(flatArray([1, 2, 1000, 300, [400, [3, 10, [11, 12]], [1, 2, [3, 4]], 5, 6]]))
 
 /*---9---*/
+/*---Fix---*/
 
 const exampleArray9 = [1, 'xxx', null, undefined, 'yyy', null];
-function deleteNullAndUndefined(array, callback) {
-    const filterArray = array.filter((value) => value !== null && value !== undefined);
-
-    setTimeout(() => {
-        callback(filterArray);
-    }, 5000);
-}
 
 function callbackForEx9(res){
     console.log("Filtered Array:", res);
 }
+async function deleteNullAndUndefined(array, callback) {
+    const filterArray = array.filter((value) => value !== null && value !== undefined);
 
-deleteNullAndUndefined(exampleArray9, callbackForEx9);
+    await new Promise(resolve => setTimeout(resolve, 5000)); // ожидаем 5 секунд
+
+    callback(filterArray);
+}
+
+deleteNullAndUndefined(exampleArray9, callbackForEx9)
 
 /*---10---*/
+/*---Fix---*/
 
-function resolveAfter (value){
-    return new Promise(resolve => {
+async function resolveAfter (value){
+    return await new Promise(resolve => {
         setTimeout(() => resolve(value), 6000);
-    });
+    })
 }
 console.log(resolveAfter('Resolve'));
 
