@@ -153,6 +153,20 @@ console.log(flatArray([1, 2, 1000, 300, [400, [3, 10, [11, 12]], [1, 2, [3, 4]],
 
 /*---9---*/
 
+const exampleArray9 = [1, 'xxx', null, undefined, 'yyy', null];
+function deleteNullAndUndefined(array, callback) {
+    const filterArray = array.filter((value) => value !== null && value !== undefined);
+
+    setTimeout(() => {
+        callback(filterArray);
+    }, 5000);
+}
+
+function callbackForEx9(res){
+    console.log("Filtered Array:", res);
+}
+
+deleteNullAndUndefined(exampleArray9, callbackForEx9);
 
 /*---10---*/
 
@@ -164,3 +178,37 @@ function resolveAfter (value){
 console.log(resolveAfter('Resolve'));
 
 /*---11---*/
+
+const exampleArrayPromises = [
+    new Promise((res, rej) => {
+        setTimeout(() => {
+            const promise1 = "Promise-1";
+            res(`${promise1} выполнен!`);
+        }, 5000);
+    }),
+    new Promise((res, rej) => {
+        setTimeout(() => {
+            const promise2 = "Promise-2";
+            res(`${promise2} выполнен!`);
+        }, 10000);
+    }),
+    new Promise((res, rej) => {
+        setTimeout(() => {
+            const promise3 = "Promise-3";
+            res(`${promise3} выполнен!`);
+        }, 3000);
+    })
+];
+
+async function runPromisesInSeries(arrayPromise) {
+    const results = [];
+
+    for (let i = 0; i < arrayPromise.length; i++) {
+        const result = await arrayPromise[i];
+        results.push(result);
+    }
+
+    return results;
+}
+
+runPromisesInSeries(exampleArrayPromises).then(results => console.log(results))
