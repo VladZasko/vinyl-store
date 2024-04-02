@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "csv-writer": "^1.6.0",
+    "uuid": "^9.0.1"
+  },
+  "name": "Homework",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://nodejs-course-2024-gitlab.leverx-group.com/nodejs-courses/uladzislau-zasko.git",
+  "author": "vladz <vlad.zasko@gmail.com>",
+  "license": "MIT"
+}
