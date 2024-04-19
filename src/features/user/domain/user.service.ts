@@ -4,19 +4,15 @@ import { CreateUserModel } from '../models/input/CreateUserModel';
 import { UserViewModel } from '../models/output/UserViewModel';
 import { UserType } from '../../../memoryDb/db';
 import { UpdateUserModel } from '../models/input/UpdateUserModel';
-import { EmailAdapter } from '../adapters/email-adapter';
-import { UsersRepository } from '../repository/user.repository';
-import { userAuthMapper } from '../mapper/mappers';
-import { JwtService } from '@nestjs/jwt';
-import { Injectable } from '@nestjs/common';
-import { LoginAuthUserModel } from '../models/input/LoginAuthUserModel';
+import { EmailAdapter } from '../adapter/email-adapter';
+import { UserRepository } from '../repository/user.repository';
+import { Inject, Injectable } from '@nestjs/common';
 
 @Injectable()
-export class UsersService {
+export class UserService {
   constructor(
-    protected usersRepository: UsersRepository,
-    protected emailAdapter: EmailAdapter,
-    private readonly jwtService: JwtService,
+    @Inject(UserRepository) protected usersRepository: UserRepository,
+    @Inject(EmailAdapter) protected emailAdapter: EmailAdapter,
   ) {}
   async createUser(createData: CreateUserModel): Promise<UserViewModel | null> {
     const email: UserType | undefined = await this.usersRepository.findByEmail(
@@ -65,36 +61,7 @@ export class UsersService {
     return true;
   }
 
-  async checkCredentials(
-    loginData: LoginAuthUserModel,
-  ): Promise<UserViewModel | null> {
-    const user: UserType | undefined = await this.usersRepository.findByEmail(
-      loginData.email,
-    );
-    if (!user) {
-      return null;
-    }
-
-    const passwordHash: string = await this._generateHash(
-      loginData.password,
-      user.passwordHash,
-    );
-
-    if (user.passwordHash !== passwordHash) {
-      return null;
-    }
-
-    return userAuthMapper(user);
-  }
-
   async _generateHash(password: string, salt: string): Promise<string> {
     return await bcrypt.hash(password, salt);
-  }
-
-  async login(userId: string): Promise<string> {
-    const payload: { sub: string } = { sub: userId };
-    return this.jwtService.sign(payload, {
-      expiresIn: process.env.ACCESS_TOKEN_TIME,
-    });
   }
 }

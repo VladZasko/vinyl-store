@@ -1,11 +1,11 @@
 import { db, UserType } from '../../../memoryDb/db';
 import { UserViewModel } from '../models/output/UserViewModel';
 import { UpdateUserModel } from '../models/input/UpdateUserModel';
-import { userAuthMapper } from '../mapper/mappers';
 import { Injectable } from '@nestjs/common';
+import { userAuthMapper } from '../../auth/mapper/mapper';
 
 @Injectable()
-export class UsersRepository {
+export class UserRepository {
   async createUser(createData: UserType): Promise<UserViewModel> {
     db.users.push(createData);
 

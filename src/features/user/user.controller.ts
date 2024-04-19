@@ -5,38 +5,27 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Post,
   Put,
   Request,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { LocalAuthGuard } from './guards/local-auth.guard';
-import { UsersService } from './domain/users.servis';
+import { UserService } from './domain/user.service';
 import { CreateUserModel } from './models/input/CreateUserModel';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { UsersRepository } from './repository/user.repository';
+import { UserRepository } from './repository/user.repository';
 import { UpdateUserModel } from './models/input/UpdateUserModel';
 import { UserViewModel } from './models/output/UserViewModel';
 import { ProfileViewModel } from './models/output/ProfileViewModel';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 
 @Controller('users')
 export class UserController {
   constructor(
-    protected usersService: UsersService,
-    protected usersRepository: UsersRepository,
+    @Inject(UserService) protected userService: UserService,
+    @Inject(UserRepository) protected userRepository: UserRepository,
   ) {}
-
-  @UseGuards(LocalAuthGuard)
-  @HttpCode(HttpStatus.OK)
-  @Post('login')
-  async login(@Request() req): Promise<{ accessToken: string }> {
-    const accessToken: string = await this.usersService.login(req.user.userId);
-
-    return {
-      accessToken: accessToken,
-    };
-  }
 
   @Post('registration')
   @HttpCode(HttpStatus.CREATED)
@@ -44,7 +33,7 @@ export class UserController {
     @Body() inputModel: CreateUserModel,
   ): Promise<UserViewModel> {
     const newUser: UserViewModel =
-      await this.usersService.createUser(inputModel);
+      await this.userService.createUser(inputModel);
 
     if (!newUser) throw new BadRequestException('User not create');
 
@@ -58,11 +47,11 @@ export class UserController {
     @Request() req,
     @Body() inputModel: UpdateUserModel,
   ): Promise<void> {
-    const user: UserViewModel = await this.usersRepository.getUserById(
+    const user: UserViewModel = await this.userRepository.getUserById(
       req.user.userId,
     );
 
-    const updateUser: boolean = await this.usersService.updateUser(
+    const updateUser: boolean = await this.userService.updateUser(
       user,
       inputModel,
     );
@@ -75,7 +64,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async me(@Request() req): Promise<ProfileViewModel> {
-    const user: UserViewModel = await this.usersRepository.getUserById(
+    const user: UserViewModel = await this.userRepository.getUserById(
       req.user.userId,
     );
 

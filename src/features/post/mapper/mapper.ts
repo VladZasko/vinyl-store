@@ -1,5 +1,5 @@
 import { db, LikesType, PostsType } from '../../../memoryDb/db';
-import { PostsViewTypeWithLike } from '../models/output/PostsViewModel';
+import { PostsViewTypeWithLike } from '../models/output/PostViewModel';
 import { LikesStatus } from '../models/input/LikesModule';
 
 export const mapper = (

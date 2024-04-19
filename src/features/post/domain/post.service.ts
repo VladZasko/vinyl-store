@@ -1,14 +1,16 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Injectable } from '@nestjs/common';
-import { PostsRepository } from '../repository/posts.repository';
-import { PostsViewType } from '../models/output/PostsViewModel';
+import { Inject, Injectable } from '@nestjs/common';
+import { PostRepository } from '../repository/post.repository';
+import { PostsViewType } from '../models/output/PostViewModel';
 import { CreatePostDTO } from '../models/input/CreatePostModel';
 import { LikesType, PostsType } from '../../../memoryDb/db';
 import { UpdatePostDTO } from '../models/input/UpdatePostModel';
 
 @Injectable()
-export class PostsService {
-  constructor(protected postsRepository: PostsRepository) {}
+export class PostService {
+  constructor(
+    @Inject(PostRepository) protected postsRepository: PostRepository,
+  ) {}
 
   async createPost(createData: CreatePostDTO): Promise<PostsViewType> {
     const newPost: PostsType = {

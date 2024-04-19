@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import {
   PostsViewType,
   PostsViewTypeWithLike,
-} from '../models/output/PostsViewModel';
+} from '../models/output/PostViewModel';
 import { db, LikesType, PostsType } from '../../../memoryDb/db';
 import { mapper } from '../mapper/mapper';
 import { UpdatePostDTO } from '../models/input/UpdatePostModel';
 
 @Injectable()
-export class PostsRepository {
+export class PostRepository {
   async getAllPosts(userId: string): Promise<PostsViewTypeWithLike[] | null> {
     const posts: PostsType[] = db.posts;
     if (!posts) {

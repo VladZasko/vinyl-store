@@ -1,5 +1,5 @@
 import { UserType } from '../../../memoryDb/db';
-import { UserViewModel } from '../models/output/UserViewModel';
+import { UserViewModel } from '../../user/models/output/UserViewModel';
 
 export const userAuthMapper = (userDb: UserType): UserViewModel => {
   return {

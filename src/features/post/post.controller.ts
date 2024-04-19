@@ -6,6 +6,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   NotFoundException,
   Param,
   Post,
@@ -13,32 +14,32 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../user/guards/jwt-auth.guard';
 import {
   PostsViewType,
   PostsViewTypeWithLike,
-} from './models/output/PostsViewModel';
+} from './models/output/PostViewModel';
 import { CreatePostData, CreatePostDTO } from './models/input/CreatePostModel';
-import { UsersRepository } from '../user/repository/user.repository';
+import { UserRepository } from '../user/repository/user.repository';
 import { LikesType, PostsType } from '../../memoryDb/db';
 import { UpdatePostDTO } from './models/input/UpdatePostModel';
-import { PostsService } from './domain/posts.servis';
-import { PostsRepository } from './repository/posts.repository';
+import { PostService } from './domain/post.service';
+import { PostRepository } from './repository/post.repository';
 import { UserViewModel } from '../user/models/output/UserViewModel';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 
 @Controller('posts')
-export class PostsController {
+export class PostController {
   constructor(
-    protected postsService: PostsService,
-    protected postsRepository: PostsRepository,
-    protected usersRepository: UsersRepository,
+    @Inject(PostService) protected postService: PostService,
+    @Inject(PostRepository) protected postRepository: PostRepository,
+    @Inject(UserRepository) protected userRepository: UserRepository,
   ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('all-posts')
   async getAllPosts(@Request() req): Promise<PostsViewTypeWithLike[]> {
     const posts: PostsViewTypeWithLike[] | null =
-      await this.postsRepository.getAllPosts(req.user.userId);
+      await this.postRepository.getAllPosts(req.user.userId);
 
     if (!posts) throw new NotFoundException('Post not found');
 
@@ -50,7 +51,7 @@ export class PostsController {
   @Get()
   async getPosts(@Request() req): Promise<PostsViewTypeWithLike[]> {
     const posts: PostsViewTypeWithLike[] | null =
-      await this.postsRepository.getPostsById(req.user!.userId);
+      await this.postRepository.getPostsById(req.user!.userId);
 
     if (!posts) throw new NotFoundException('Post not found');
 
@@ -64,7 +65,7 @@ export class PostsController {
     @Request() req,
     @Body() inputModel: CreatePostData,
   ): Promise<PostsViewType> {
-    const user: UserViewModel = await this.usersRepository.getUserById(
+    const user: UserViewModel = await this.userRepository.getUserById(
       req.user.userId,
     );
 
@@ -75,7 +76,7 @@ export class PostsController {
       userId: req.user!.userId,
     };
 
-    return await this.postsService.createPost(createData);
+    return await this.postService.createPost(createData);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -87,7 +88,7 @@ export class PostsController {
     @Param('id') postId: string,
   ): Promise<void> {
     const post: PostsType | null =
-      await this.postsRepository.getPostById(postId);
+      await this.postRepository.getPostById(postId);
 
     if (!post) throw new NotFoundException('Post not found');
 
@@ -100,7 +101,7 @@ export class PostsController {
       description: inputModel.description,
     };
 
-    await this.postsService.updatePost(upData);
+    await this.postService.updatePost(upData);
 
     return;
   }
@@ -112,7 +113,7 @@ export class PostsController {
     @Request() req,
     @Param('id') postId: string,
   ): Promise<void> {
-    const user: UserViewModel = await this.usersRepository.getUserById(
+    const user: UserViewModel = await this.userRepository.getUserById(
       req.user.userId,
     );
 
@@ -121,11 +122,11 @@ export class PostsController {
       postId: postId,
     };
 
-    const post: PostsType = await this.postsRepository.getPostById(postId);
+    const post: PostsType = await this.postRepository.getPostById(postId);
 
     if (!post) throw new NotFoundException('Post not found');
 
-    await this.postsService.updateLikeStatus(upData);
+    await this.postService.updateLikeStatus(upData);
 
     return;
   }
@@ -135,14 +136,14 @@ export class PostsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deletePost(@Request() req, @Param('id') postId: string): Promise<void> {
     const post: PostsType | null =
-      await this.postsRepository.getPostById(postId);
+      await this.postRepository.getPostById(postId);
 
     if (!post) throw new NotFoundException('Post not found');
 
     if (post!.userId !== req.user!.userId)
       throw new ForbiddenException('Action prohibited for the specified post');
 
-    await this.postsService.deletePostById(req.params.id);
+    await this.postService.deletePostById(req.params.id);
 
     return;
   }
