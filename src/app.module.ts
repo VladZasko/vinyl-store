@@ -4,6 +4,11 @@ import { UsersModule } from './features/user/user.module';
 import { PostModule } from './features/post/post.module';
 import { AuthModule } from './features/auth/auth.module';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { Post } from './db/entity/post.entity';
+import { Like } from './db/entity/like.entity';
+import { User } from './db/entity/user.entity';
 
 export const options: TypeOrmModuleOptions = {
   type: 'mysql',
@@ -18,12 +23,13 @@ export const options: TypeOrmModuleOptions = {
 @Module({
   imports: [
     TypeOrmModule.forRoot(options),
+    TypeOrmModule.forFeature([Post, Like, User]),
     ConfigModule.forRoot(),
     UsersModule,
     PostModule,
     AuthModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}
