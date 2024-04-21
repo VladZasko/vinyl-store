@@ -18,7 +18,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(@Request() req): Promise<{ accessToken: string }> {
-    const accessToken: string = await this.authService.login(req.user.userId);
+    const accessToken: string = await this.authService.login(req.user.id);
 
     return {
       accessToken: accessToken,

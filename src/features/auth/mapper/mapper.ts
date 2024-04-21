@@ -1,9 +1,9 @@
-import { UserType } from '../../../memoryDb/db';
 import { UserViewModel } from '../../user/models/output/UserViewModel';
+import { User } from '../../../db/entity/user.entity';
 
-export const userAuthMapper = (userDb: UserType): UserViewModel => {
+export const userAuthMapper = (userDb: User): UserViewModel => {
   return {
-    userId: userDb.userId,
+    id: userDb.id,
     login: userDb.login,
     email: userDb.email,
     firstName: userDb.firstName,

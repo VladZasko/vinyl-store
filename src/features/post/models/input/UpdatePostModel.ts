@@ -1,3 +1,3 @@
-import { PostsType } from '../../../../memoryDb/db';
+import { PostsType } from '../PostType';
 
-export type UpdatePostDTO = Pick<PostsType, 'title' | 'description' | 'postId'>;
+export type UpdatePostDTO = Pick<PostsType, 'title' | 'description' | 'id'>;

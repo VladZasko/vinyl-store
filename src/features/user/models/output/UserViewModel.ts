@@ -1,5 +1,5 @@
 export type UserViewModel = {
-  userId: string;
+  id: string;
   login: string;
   email: string;
   firstName: string;

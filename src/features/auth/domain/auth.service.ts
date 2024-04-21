@@ -2,10 +2,10 @@ import * as bcrypt from 'bcrypt';
 import { UserRepository } from '../../user/repository/user.repository';
 import { LoginAuthUserModel } from '../model/LoginAuthUserModel';
 import { UserViewModel } from '../../user/models/output/UserViewModel';
-import { UserType } from '../../../memoryDb/db';
 import { userAuthMapper } from '../mapper/mapper';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '../../../db/entity/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +17,7 @@ export class AuthService {
   async checkCredentials(
     loginData: LoginAuthUserModel,
   ): Promise<UserViewModel | null> {
-    const user: UserType | undefined = await this.userRepository.findByEmail(
+    const user: User | undefined = await this.userRepository.findByEmail(
       loginData.email,
     );
     if (!user) {

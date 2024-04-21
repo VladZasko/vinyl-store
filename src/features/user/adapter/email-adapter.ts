@@ -1,10 +1,9 @@
 import * as nodemailer from 'nodemailer';
 import { UpdateUserModel } from '../models/input/UpdateUserModel';
-import { UserViewModel } from '../models/output/UserViewModel';
 
 export class EmailAdapter {
   async sendNotification(
-    user: UserViewModel,
+    email: string,
     updateData: UpdateUserModel,
   ): Promise<boolean> {
     const transport = nodemailer.createTransport({
@@ -20,7 +19,7 @@ export class EmailAdapter {
 
     await transport.sendMail({
       from: 'Vlad Zasko <uladzislauzasko@gmail.com>',
-      to: user.email,
+      to: email,
       subject: 'Changed profile',
       html:
         ' <h1>Your profile information has been successfully changed</h1>\n' +

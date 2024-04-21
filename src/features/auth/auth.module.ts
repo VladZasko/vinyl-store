@@ -7,9 +7,18 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { LocalStrategy } from './strategie/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Post } from '../../db/entity/post.entity';
+import { Like } from '../../db/entity/like.entity';
+import { User } from '../../db/entity/user.entity';
 
 @Module({
-  imports: [ConfigModule.forRoot(), JwtModule, PassportModule],
+  imports: [
+    TypeOrmModule.forFeature([Post, Like, User]),
+    ConfigModule.forRoot(),
+    JwtModule,
+    PassportModule,
+  ],
   providers: [
     AuthService,
     UserRepository,

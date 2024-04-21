@@ -1,5 +1,5 @@
-import { PostsType } from '../../../../memoryDb/db';
 import { Length } from 'class-validator';
+import { PostsType } from '../PostType';
 
 export class CreatePostData {
   @Length(3, 30)

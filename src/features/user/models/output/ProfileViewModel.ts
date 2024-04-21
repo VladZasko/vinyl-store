@@ -1,4 +1,4 @@
-import { UserType } from '../../../../memoryDb/db';
+import { UserType } from '../UserType';
 
 export type ProfileViewModel = Pick<
   UserType,

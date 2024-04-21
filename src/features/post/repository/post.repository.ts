@@ -1,92 +1,87 @@
 import { Injectable } from '@nestjs/common';
-import {
-  PostsViewType,
-  PostsViewTypeWithLike,
-} from '../models/output/PostViewModel';
-import { db, LikesType, PostsType } from '../../../memoryDb/db';
+import { PostsViewType } from '../models/output/PostViewModel';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Post } from '../../../db/entity/post.entity';
+import { Like } from '../../../db/entity/like.entity';
+import { QueryPostsModel } from '../models/input/QueryPostModule';
 import { mapper } from '../mapper/mapper';
-import { UpdatePostDTO } from '../models/input/UpdatePostModel';
+import { PostsType } from '../models/PostType';
 
 @Injectable()
 export class PostRepository {
-  async getAllPosts(userId: string): Promise<PostsViewTypeWithLike[] | null> {
-    const posts: PostsType[] = db.posts;
-    if (!posts) {
-      return null;
-    }
+  constructor(
+    @InjectRepository(Post)
+    private readonly postRepository: Repository<Post>,
+    @InjectRepository(Like)
+    private readonly likeRepository: Repository<Like>,
+  ) {}
+  async getAllPosts(query: QueryPostsModel) {
+    const pageNumber = query.pageNumber ?? 1;
+    const pageSize = query.pageSize ?? 10;
+    const sortBy = query.sortBy ?? 'createdAt';
+    const sortDirection = query.sortDirection ?? 'DESC';
 
-    return posts.map((p: PostsType) => mapper(p, userId));
+    const posts = await this.postRepository
+      .createQueryBuilder('p')
+      .addSelect('COUNT(l.id)', 'likesCount')
+      .leftJoin('like', 'l', 'l.postId = p.id')
+      .groupBy('p.id')
+      .orderBy(`p.${sortBy}`, sortDirection)
+      .offset((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .getRawMany();
+
+    return posts.map((p) => mapper(p));
   }
-  async getPostsById(userId: string): Promise<PostsViewTypeWithLike[] | null> {
-    const posts: PostsType[] = db.posts.filter(
-      (v: PostsType) => v.userId === userId,
-    );
+  async getPostsById(query: QueryPostsModel, userId: string) {
+    const pageNumber = query.pageNumber ?? 1;
+    const pageSize = query.pageSize ?? 10;
+    const sortBy = query.sortBy ?? 'createdAt';
+    const sortDirection = query.sortDirection ?? 'DESC';
 
-    if (!posts) {
-      return null;
-    }
+    const posts = await this.postRepository
+      .createQueryBuilder('p')
+      .addSelect('COUNT(l.id)', 'likesCount')
+      .leftJoin('like', 'l', 'l.postId = p.id')
+      .where('p.userId = :userId', { userId: userId })
+      .groupBy('p.id')
+      .orderBy(`p.${sortBy}`, sortDirection)
+      .offset((pageNumber - 1) * pageSize)
+      .limit(pageSize)
+      .getRawMany();
 
-    return posts.map((p: PostsType) => mapper(p, userId));
+    return posts.map((p) => mapper(p));
   }
 
-  async getPostById(id: string): Promise<PostsType | null> {
-    const post: PostsType | undefined = db.posts.find(
-      (v: PostsType) => v.postId === id,
-    );
-
-    if (!post) {
-      return null;
-    }
-
-    return post;
+  async getPostById(id: string) {
+    return this.postRepository.findOneBy({ id: id });
   }
 
   async createPost(createData: PostsType): Promise<PostsViewType> {
-    db.posts.push(createData);
-
-    return {
-      postId: createData.postId,
-      fullName: createData.fullName,
-      title: createData.title,
-      description: createData.description,
-      createdAt: createData.createdAt,
-    };
+    return this.postRepository.save(createData);
   }
 
-  async updatePost(upData: UpdatePostDTO): Promise<boolean> {
-    const foundPost: PostsType | undefined = db.posts.find(
-      (c: PostsType) => c.postId === upData.postId,
-    );
-
-    if (!foundPost) {
-      return false;
-    }
-
-    foundPost.title = upData.title;
-    foundPost.description = upData.description;
-
-    return true;
+  async updatePost(upData: Post) {
+    return this.postRepository.save(upData);
   }
-  async updateLike(likesData: LikesType): Promise<boolean> {
-    const isLiked: LikesType = db.likes.find(
-      (c: LikesType) =>
-        c.postId === likesData.postId && c.userId === likesData.userId,
-    );
+  async updateLike(likesData: any): Promise<boolean> {
+    const postId = likesData.postId;
+    const userId = likesData.userId;
+    const like = await this.likeRepository
+      .createQueryBuilder('like')
+      .where('like.postId = :postId', { postId })
+      .andWhere('like.userId = :userId', { userId })
+      .getOne();
 
-    if (!isLiked) {
-      db.likes.push(likesData);
+    if (!like) {
+      await this.likeRepository.save(likesData);
       return true;
     } else {
-      db.likes = db.likes.filter(
-        (c: LikesType) =>
-          !(c.postId === likesData.postId && c.userId === likesData.userId),
-      );
-      return true;
+      await this.likeRepository.delete(like.id);
     }
   }
-  async deletePostById(id: string): Promise<boolean> {
-    db.posts = db.posts.filter((v: PostsType) => v.postId !== id);
-
-    return true;
+  async deletePostById(id: string) {
+    await this.postRepository.delete(id);
   }
 }

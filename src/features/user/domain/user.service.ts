@@ -1,12 +1,11 @@
 import * as bcrypt from 'bcrypt';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateUserModel } from '../models/input/CreateUserModel';
 import { UserViewModel } from '../models/output/UserViewModel';
-import { UserType } from '../../../memoryDb/db';
 import { UpdateUserModel } from '../models/input/UpdateUserModel';
 import { EmailAdapter } from '../adapter/email-adapter';
 import { UserRepository } from '../repository/user.repository';
 import { Inject, Injectable } from '@nestjs/common';
+import { User } from '../../../db/entity/user.entity';
 
 @Injectable()
 export class UserService {
@@ -15,7 +14,7 @@ export class UserService {
     @Inject(EmailAdapter) protected emailAdapter: EmailAdapter,
   ) {}
   async createUser(createData: CreateUserModel): Promise<UserViewModel | null> {
-    const email: UserType | undefined = await this.usersRepository.findByEmail(
+    const email: User | undefined = await this.usersRepository.findByEmail(
       createData.email,
     );
 
@@ -29,29 +28,32 @@ export class UserService {
       passwordSalt,
     );
 
-    const newUser: UserType = {
-      userId: uuidv4(),
-      login: createData.login,
-      email: createData.email,
-      lastName: createData.lastName,
-      firstName: createData.firstName,
-      createdAt: new Date().toISOString(),
-      passwordHash,
-      passwordSalt,
-    };
+    const newUser = new User();
+    newUser.login = createData.login;
+    newUser.email = createData.email;
+    newUser.lastName = createData.lastName;
+    newUser.firstName = createData.firstName;
+    newUser.passwordHash = passwordHash;
+    newUser.passwordSalt = passwordSalt;
+    newUser.createdAt = new Date().toISOString();
 
     return await this.usersRepository.createUser(newUser);
   }
 
   async updateUser(
-    user: UserViewModel,
+    userId: string,
     updateData: UpdateUserModel,
   ): Promise<boolean> {
-    await this.usersRepository.updateUser(user, updateData);
+    const user = await this.usersRepository.getUserById(userId);
 
-    if (updateData) {
+    user.firstName = updateData.firstName;
+    user.lastName = updateData.lastName;
+
+    const updateUser = await this.usersRepository.updateUser(user);
+
+    if (updateUser) {
       try {
-        await this.emailAdapter.sendNotification(user, updateData);
+        await this.emailAdapter.sendNotification(user.email, updateData);
       } catch (error) {
         console.error(error);
         return false;

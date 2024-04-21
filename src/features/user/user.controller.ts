@@ -47,12 +47,8 @@ export class UserController {
     @Request() req,
     @Body() inputModel: UpdateUserModel,
   ): Promise<void> {
-    const user: UserViewModel = await this.userRepository.getUserById(
-      req.user.userId,
-    );
-
     const updateUser: boolean = await this.userService.updateUser(
-      user,
+      req.user.userId,
       inputModel,
     );
 
@@ -75,5 +71,12 @@ export class UserController {
       lastName: user.lastName,
       email: user.email,
     };
+  }
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getAllUser() {
+    const user = await this.userRepository.getAllUser();
+
+    return user;
   }
 }

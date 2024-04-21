@@ -1,5 +1,5 @@
-import { PostsType } from '../../../../memoryDb/db';
 import { LikesStatus } from '../input/LikesModule';
+import { PostsType } from '../PostType';
 
 export type PostsViewType = Omit<PostsType, 'userId'>;
 

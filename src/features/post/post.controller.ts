@@ -13,19 +13,18 @@ import {
   Put,
   Request,
   UseGuards,
+  Query,
 } from '@nestjs/common';
-import {
-  PostsViewType,
-  PostsViewTypeWithLike,
-} from './models/output/PostViewModel';
+import { PostsViewType } from './models/output/PostViewModel';
 import { CreatePostData, CreatePostDTO } from './models/input/CreatePostModel';
 import { UserRepository } from '../user/repository/user.repository';
-import { LikesType, PostsType } from '../../memoryDb/db';
 import { UpdatePostDTO } from './models/input/UpdatePostModel';
 import { PostService } from './domain/post.service';
 import { PostRepository } from './repository/post.repository';
-import { UserViewModel } from '../user/models/output/UserViewModel';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { QueryPostsModel } from './models/input/QueryPostModule';
+import { User } from '../../db/entity/user.entity';
+import { PostsType } from './models/PostType';
 
 @Controller('posts')
 export class PostController {
@@ -37,9 +36,8 @@ export class PostController {
 
   @UseGuards(JwtAuthGuard)
   @Get('all-posts')
-  async getAllPosts(@Request() req): Promise<PostsViewTypeWithLike[]> {
-    const posts: PostsViewTypeWithLike[] | null =
-      await this.postRepository.getAllPosts(req.user.userId);
+  async getAllPosts(@Query() query: QueryPostsModel) {
+    const posts = await this.postRepository.getAllPosts(query);
 
     if (!posts) throw new NotFoundException('Post not found');
 
@@ -49,9 +47,11 @@ export class PostController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get()
-  async getPosts(@Request() req): Promise<PostsViewTypeWithLike[]> {
-    const posts: PostsViewTypeWithLike[] | null =
-      await this.postRepository.getPostsById(req.user!.userId);
+  async getPosts(@Query() query: QueryPostsModel, @Request() req) {
+    const posts = await this.postRepository.getPostsById(
+      query,
+      req.user.userId,
+    );
 
     if (!posts) throw new NotFoundException('Post not found');
 
@@ -65,15 +65,13 @@ export class PostController {
     @Request() req,
     @Body() inputModel: CreatePostData,
   ): Promise<PostsViewType> {
-    const user: UserViewModel = await this.userRepository.getUserById(
-      req.user.userId,
-    );
+    const user: User = await this.userRepository.getUserById(req.user.userId);
 
     const createData: CreatePostDTO = {
       fullName: `${user.firstName} ${user.lastName}`,
       title: inputModel.title,
       description: inputModel.description,
-      userId: req.user!.userId,
+      userId: user!.id,
     };
 
     return await this.postService.createPost(createData);
@@ -96,7 +94,7 @@ export class PostController {
       throw new ForbiddenException('Action prohibited for the specified post');
 
     const upData: UpdatePostDTO = {
-      postId: postId,
+      id: postId,
       title: inputModel.title,
       description: inputModel.description,
     };
@@ -113,12 +111,10 @@ export class PostController {
     @Request() req,
     @Param('id') postId: string,
   ): Promise<void> {
-    const user: UserViewModel = await this.userRepository.getUserById(
-      req.user.userId,
-    );
+    const user: User = await this.userRepository.getUserById(req.user.userId);
 
-    const upData: LikesType = {
-      userId: user!.userId,
+    const upData = {
+      userId: user!.id,
       postId: postId,
     };
 
