@@ -3,14 +3,17 @@ import { CreateUserModel } from '../models/input/CreateUserModel';
 import { UserViewModel } from '../models/output/UserViewModel';
 import { UpdateUserModel } from '../models/input/UpdateUserModel';
 import { EmailAdapter } from '../adapter/email-adapter';
-import { UserRepository } from '../repository/user.repository';
+import { UserSqlRepository } from '../repository/user.sql.repository';
 import { Inject, Injectable } from '@nestjs/common';
 import { User } from '../../../db/entity/user.entity';
+import { UserMongoDbRepository } from '../repository/user.mongoDb.repository';
 
 @Injectable()
 export class UserService {
   constructor(
-    @Inject(UserRepository) protected usersRepository: UserRepository,
+    @Inject(UserSqlRepository) protected usersRepository: UserSqlRepository,
+    @Inject(UserMongoDbRepository)
+    protected usersMongoDbRepository: UserMongoDbRepository,
     @Inject(EmailAdapter) protected emailAdapter: EmailAdapter,
   ) {}
   async createUser(createData: CreateUserModel): Promise<UserViewModel | null> {
@@ -29,6 +32,7 @@ export class UserService {
     );
 
     const newUser = new User();
+
     newUser.login = createData.login;
     newUser.email = createData.email;
     newUser.lastName = createData.lastName;
@@ -37,7 +41,20 @@ export class UserService {
     newUser.passwordSalt = passwordSalt;
     newUser.createdAt = new Date().toISOString();
 
-    return await this.usersRepository.createUser(newUser);
+    const user = await this.usersRepository.createUser(newUser);
+
+    const userMongo = {
+      _id: user.id,
+      login: user.login,
+      email: user.email,
+      lastName: user.lastName,
+      firstName: user.firstName,
+      createdAt: user.createdAt,
+    };
+
+    await this.usersMongoDbRepository.createUser(userMongo);
+
+    return user;
   }
 
   async updateUser(
@@ -50,6 +67,8 @@ export class UserService {
     user.lastName = updateData.lastName;
 
     const updateUser = await this.usersRepository.updateUser(user);
+
+    await this.usersMongoDbRepository.updateUser(userId, updateData);
 
     if (updateUser) {
       try {

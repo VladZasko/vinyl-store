@@ -8,23 +8,28 @@ import {
   Inject,
   Post,
   Put,
+  Query,
   Request,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './domain/user.service';
 import { CreateUserModel } from './models/input/CreateUserModel';
-import { UserRepository } from './repository/user.repository';
+import { UserSqlRepository } from './repository/user.sql.repository';
 import { UpdateUserModel } from './models/input/UpdateUserModel';
 import { UserViewModel } from './models/output/UserViewModel';
 import { ProfileViewModel } from './models/output/ProfileViewModel';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { UserMongoDbQueryRepository } from './repository/user.mongoDb.query.repository';
+import { QueryPostsModel } from '../post/models/input/QueryPostModule';
 
 @Controller('users')
 export class UserController {
   constructor(
     @Inject(UserService) protected userService: UserService,
-    @Inject(UserRepository) protected userRepository: UserRepository,
+    @Inject(UserSqlRepository) protected userRepository: UserSqlRepository,
+    @Inject(UserMongoDbQueryRepository)
+    protected userMongoQueryRepository: UserMongoDbQueryRepository,
   ) {}
 
   @Post('registration')
@@ -60,22 +65,20 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async me(@Request() req): Promise<ProfileViewModel> {
-    const user: UserViewModel = await this.userRepository.getUserById(
-      req.user.userId,
-    );
+    const user: ProfileViewModel =
+      await this.userMongoQueryRepository.getUserById(req.user.userId);
 
     if (!user) throw new UnauthorizedException();
 
-    return {
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-    };
+    return user;
   }
   @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllUser() {
-    const user = await this.userRepository.getAllUser();
+  async getAllUser(@Query() query: QueryPostsModel, @Request() req) {
+    const user = await this.userMongoQueryRepository.getAllUser(
+      query,
+      req.user.userId,
+    );
 
     return user;
   }

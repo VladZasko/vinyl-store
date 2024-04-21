@@ -1,9 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PostController } from './post.controller';
-import { PostService } from './domain/post.service';
-import { PostSqlRepository } from './repository/post.sql.repository';
-import { UserSqlRepository } from '../user/repository/user.sql.repository';
 import { Post } from '../../db/entity/post.entity';
 import { Like } from '../../db/entity/like.entity';
 import { User } from '../../db/entity/user.entity';
@@ -20,8 +16,9 @@ import {
   LikeMongoType,
   LikeSchema,
 } from '../../db/mongoDb/schemes/like.schemes';
-import { PostMongoDbRepository } from './repository/post.mongoDb.repository';
-import { PostMongoDbQueryRepository } from './repository/post.mongoDb.query.repository';
+import { TestSqlRepository } from './test.sql.repository';
+import { TestController } from './test.controller';
+import { TestMongoDbQueryRepository } from './test.mongoDb.repository';
 
 @Module({
   imports: [
@@ -41,13 +38,7 @@ import { PostMongoDbQueryRepository } from './repository/post.mongoDb.query.repo
       },
     ]),
   ],
-  providers: [
-    PostService,
-    PostSqlRepository,
-    UserSqlRepository,
-    PostMongoDbRepository,
-    PostMongoDbQueryRepository,
-  ],
-  controllers: [PostController],
+  providers: [TestSqlRepository, TestMongoDbQueryRepository],
+  controllers: [TestController],
 })
-export class PostModule {}
+export class TestModule {}

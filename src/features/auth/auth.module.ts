@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './domain/auth.service';
 import { AuthController } from './auth.controller';
-import { UserRepository } from '../user/repository/user.repository';
+import { UserSqlRepository } from '../user/repository/user.sql.repository';
 import { JwtStrategy } from './strategie/jwt.strategy';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { LocalStrategy } from './strategie/local.strategy';
@@ -21,7 +21,7 @@ import { User } from '../../db/entity/user.entity';
   ],
   providers: [
     AuthService,
-    UserRepository,
+    UserSqlRepository,
     JwtStrategy,
     JwtService,
     LocalStrategy,

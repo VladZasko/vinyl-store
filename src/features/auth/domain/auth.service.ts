@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { UserRepository } from '../../user/repository/user.repository';
+import { UserSqlRepository } from '../../user/repository/user.sql.repository';
 import { LoginAuthUserModel } from '../model/LoginAuthUserModel';
 import { UserViewModel } from '../../user/models/output/UserViewModel';
 import { userAuthMapper } from '../mapper/mapper';
@@ -10,7 +10,7 @@ import { User } from '../../../db/entity/user.entity';
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(UserRepository) protected userRepository: UserRepository,
+    @Inject(UserSqlRepository) protected userRepository: UserSqlRepository,
     @Inject(JwtService) private readonly jwtService: JwtService,
   ) {}
 
