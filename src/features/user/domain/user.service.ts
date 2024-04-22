@@ -5,8 +5,9 @@ import { UpdateUserModel } from '../models/input/UpdateUserModel';
 import { EmailAdapter } from '../adapter/email-adapter';
 import { UserSqlRepository } from '../repository/user.sql.repository';
 import { Inject, Injectable } from '@nestjs/common';
-import { User } from '../../../db/entity/user.entity';
+import { User } from '../../../db/sql/entity/user.entity';
 import { UserMongoDbRepository } from '../repository/user.mongoDb.repository';
+import { UserMongoType } from '../../../db/mongoDb/schemes/user.schemes';
 
 @Injectable()
 export class UserService {
@@ -31,7 +32,7 @@ export class UserService {
       passwordSalt,
     );
 
-    const newUser = new User();
+    const newUser: User = new User();
 
     newUser.login = createData.login;
     newUser.email = createData.email;
@@ -41,9 +42,9 @@ export class UserService {
     newUser.passwordSalt = passwordSalt;
     newUser.createdAt = new Date().toISOString();
 
-    const user = await this.usersRepository.createUser(newUser);
+    const user: UserViewModel = await this.usersRepository.createUser(newUser);
 
-    const userMongo = {
+    const userMongo: UserMongoType = {
       _id: user.id,
       login: user.login,
       email: user.email,
@@ -61,12 +62,12 @@ export class UserService {
     userId: string,
     updateData: UpdateUserModel,
   ): Promise<boolean> {
-    const user = await this.usersRepository.getUserById(userId);
+    const user: User = await this.usersRepository.getUserById(userId);
 
     user.firstName = updateData.firstName;
     user.lastName = updateData.lastName;
 
-    const updateUser = await this.usersRepository.updateUser(user);
+    const updateUser: boolean = await this.usersRepository.updateUser(user);
 
     await this.usersMongoDbRepository.updateUser(userId, updateData);
 

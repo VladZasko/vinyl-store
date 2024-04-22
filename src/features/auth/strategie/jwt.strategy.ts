@@ -1,8 +1,11 @@
+import { config } from 'dotenv';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UserSqlRepository } from '../../user/repository/user.sql.repository';
-import { User } from '../../../db/entity/user.entity';
+import { User } from '../../../db/sql/entity/user.entity';
+
+config();
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

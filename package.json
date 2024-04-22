@@ -18,8 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "migration:generate": "typeorm migration:generate -d dist/db/typeorm-ds.js",
-    "migration:run": "typeorm migration:run -d dist/db/typeorm-ds.js"
+    "migration:generate": "typeorm migration:generate -d dist/db/sql/typeorm-ds.js",
+    "migration:run": "typeorm migration:run -d dist/db/sql/typeorm-ds.js"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",

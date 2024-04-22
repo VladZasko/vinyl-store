@@ -1,32 +1,38 @@
 import { LikesStatus } from '../../post/models/input/LikesModule';
+import { UserMongoType } from '../../../db/mongoDb/schemes/user.schemes';
+import { LikeMongoType } from '../../../db/mongoDb/schemes/like.schemes';
+import { PostMongoType } from '../../../db/mongoDb/schemes/post.schemes';
+import { UsersViewModel } from '../models/output/UserPaginationModel';
 
 export const userQueryMapper = (
-  users: any,
-  likes: any,
-  posts: any,
+  users: UserMongoType,
+  likes: LikeMongoType[],
+  posts: PostMongoType[],
   id: string,
-) => {
-  const postsByUser = posts.filter((post) => post.userId === users._id);
+): UsersViewModel => {
+  const postsByUser: PostMongoType[] = posts.filter(
+    (post: PostMongoType) => post.userId === users._id,
+  );
 
   let firstPost: string | any = 'None';
 
   if (postsByUser.length > 0) {
-    firstPost = postsByUser.reduce((acc, arr) =>
+    firstPost = postsByUser.reduce((acc: PostMongoType, arr: PostMongoType) =>
       acc.createdAt < arr.createdAt ? acc : arr,
     );
 
-    const isLiked = likes.filter(
-      (obj) => obj.userId === id && obj.postId === firstPost._id,
+    const isLiked: LikeMongoType[] = likes.filter(
+      (obj: LikeMongoType) => obj.userId === id && obj.postId === firstPost._id,
     );
 
-    let likeStatus = LikesStatus.None;
+    let likeStatus: LikesStatus = LikesStatus.None;
 
     if (isLiked.length === 1) {
       likeStatus = LikesStatus.Like;
     }
 
-    const likesCount = likes.filter(
-      (obj) => obj.postId === firstPost._id,
+    const likesCount: number = likes.filter(
+      (obj: LikeMongoType) => obj.postId === firstPost._id,
     ).length;
 
     firstPost = {

@@ -5,5 +5,5 @@ export type PostsViewType = Omit<PostsType, 'userId'>;
 
 export type PostsViewTypeWithLike = PostsViewType & {
   likeStatus: LikesStatus;
-  countLikes: number;
+  likesCount: number;
 };

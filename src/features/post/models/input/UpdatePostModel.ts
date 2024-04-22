@@ -1,3 +1,3 @@
 import { PostsType } from '../PostType';
 
-export type UpdatePostDTO = Pick<PostsType, 'title' | 'description' | 'id'>;
+export type UpdatePostType = Pick<PostsType, 'title' | 'description' | 'id'>;

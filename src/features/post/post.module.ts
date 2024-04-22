@@ -4,9 +4,9 @@ import { PostController } from './post.controller';
 import { PostService } from './domain/post.service';
 import { PostSqlRepository } from './repository/post.sql.repository';
 import { UserSqlRepository } from '../user/repository/user.sql.repository';
-import { Post } from '../../db/entity/post.entity';
-import { Like } from '../../db/entity/like.entity';
-import { User } from '../../db/entity/user.entity';
+import { Post } from '../../db/sql/entity/post.entity';
+import { Like } from '../../db/sql/entity/like.entity';
+import { User } from '../../db/sql/entity/user.entity';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
   UserMongoType,

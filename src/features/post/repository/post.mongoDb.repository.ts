@@ -5,7 +5,7 @@ import {
   PostDocument,
   PostMongoType,
 } from '../../../db/mongoDb/schemes/post.schemes';
-import { UpdatePostDTO } from '../models/input/UpdatePostModel';
+import { UpdatePostType } from '../models/input/UpdatePostModel';
 import {
   LikeDocument,
   LikeMongoType,
@@ -18,14 +18,14 @@ export class PostMongoDbRepository {
     @InjectModel(LikeMongoType.name) private likeModel: Model<LikeDocument>,
   ) {}
 
-  async createPost(crateData: any): Promise<boolean> {
+  async createPost(crateData: PostMongoType): Promise<boolean> {
     const createdPost = new this.postModel(crateData);
     await createdPost.save();
 
     return true;
   }
 
-  async updatePost(upData: UpdatePostDTO): Promise<boolean> {
+  async updatePost(upData: UpdatePostType): Promise<boolean> {
     await this.postModel.updateOne(
       { _id: upData.id },
       {
@@ -38,35 +38,19 @@ export class PostMongoDbRepository {
     return true;
   }
 
-  async createLike(likesData: any) {
+  async createLike(likesData: LikeMongoType): Promise<boolean> {
     const createdLike = new this.likeModel(likesData);
     await createdLike.save();
 
     return true;
   }
 
-  async deleteLikeById(id: string) {
+  async deleteLikeById(id: string): Promise<boolean> {
     const deleteLike = await this.likeModel.deleteOne({ _id: id });
 
     return !!deleteLike.deletedCount;
   }
-  // async updateLike(likesData: any): Promise<boolean> {
-  //   const postId = likesData.postId;
-  //   const userId = likesData.userId;
-  //   const like = await this.likeRepository
-  //     .createQueryBuilder('like')
-  //     .where('like.postId = :postId', { postId })
-  //     .andWhere('like.userId = :userId', { userId })
-  //     .getOne();
-  //
-  //   if (!like) {
-  //     await this.likeRepository.save(likesData);
-  //     return true;
-  //   } else {
-  //     await this.likeRepository.delete(like.id);
-  //   }
-  // }
-  async deletePostById(id: string) {
+  async deletePostById(id: string): Promise<boolean> {
     const deletePost = await this.postModel.deleteOne({ _id: id });
 
     return !!deletePost.deletedCount;

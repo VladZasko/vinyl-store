@@ -1,11 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PostSqlRepository } from '../repository/post.sql.repository';
-import { PostsViewType } from '../models/output/PostViewModel';
 import { CreatePostDTO } from '../models/input/CreatePostModel';
-import { UpdatePostDTO } from '../models/input/UpdatePostModel';
-import { Post } from '../../../db/entity/post.entity';
+import { UpdatePostType } from '../models/input/UpdatePostModel';
+import { Post } from '../../../db/sql/entity/post.entity';
 import { PostMongoDbRepository } from '../repository/post.mongoDb.repository';
-import { Like } from '../../../db/entity/like.entity';
+import { Like } from '../../../db/sql/entity/like.entity';
+import { LikeUpdateModel } from '../models/input/LikeUpdateModel';
+import { PostMongoType } from '../../../db/mongoDb/schemes/post.schemes';
 
 @Injectable()
 export class PostService {
@@ -15,7 +16,7 @@ export class PostService {
     protected postMongoDbRepository: PostMongoDbRepository,
   ) {}
 
-  async createPost(createData: CreatePostDTO): Promise<PostsViewType> {
+  async createPost(createData: CreatePostDTO): Promise<Post> {
     const newPost: Post = new Post();
 
     newPost.fullName = createData.fullName;
@@ -24,9 +25,9 @@ export class PostService {
     newPost.userId = createData.userId;
     newPost.createdAt = new Date().toISOString();
 
-    const post = await this.postsRepository.createPost(newPost);
+    const post: Post = await this.postsRepository.createPost(newPost);
 
-    const createPostMongoDb = {
+    const createPostMongoDb: PostMongoType = {
       _id: post.id,
       createdAt: post.createdAt,
       ...createData,
@@ -35,21 +36,21 @@ export class PostService {
 
     return post;
   }
-  async updatePost(upData: UpdatePostDTO): Promise<Post> {
+  async updatePost(upData: UpdatePostType): Promise<Post> {
     const post: Post = await this.postsRepository.getPostById(upData.id);
 
     post.title = upData.title;
     post.description = upData.description;
 
-    const updatePost = await this.postsRepository.updatePost(post);
+    const updatePost: Post = await this.postsRepository.updatePost(post);
 
     await this.postMongoDbRepository.updatePost(upData);
 
     return updatePost;
   }
 
-  async updateLikeStatus(upData: any): Promise<boolean> {
-    const findLike = await this.postsRepository.findLike(upData);
+  async updateLikeStatus(upData: LikeUpdateModel): Promise<boolean> {
+    const findLike: Like = await this.postsRepository.findLike(upData);
 
     if (!findLike) {
       const newLike: Like = new Like();
@@ -57,7 +58,7 @@ export class PostService {
       newLike.userId = upData.userId;
       newLike.postId = upData.postId;
 
-      const like = await this.postsRepository.createLike(newLike);
+      const like: Like = await this.postsRepository.createLike(newLike);
 
       const newLikeMongo = {
         _id: like.id,

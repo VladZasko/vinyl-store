@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { userAuthMapper } from '../../auth/mapper/mapper';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../../../db/entity/user.entity';
+import { User } from '../../../db/sql/entity/user.entity';
 
 @Injectable()
 export class UserSqlRepository {

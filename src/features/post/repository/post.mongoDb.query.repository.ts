@@ -11,6 +11,7 @@ import {
   LikeMongoType,
 } from '../../../db/mongoDb/schemes/like.schemes';
 import { postQueryMapper } from '../mapper/post.query.mapper';
+import { PostPaginationModel } from '../models/output/PostPaginationModel';
 
 @Injectable()
 export class PostMongoDbQueryRepository {
@@ -19,11 +20,14 @@ export class PostMongoDbQueryRepository {
     @InjectModel(LikeMongoType.name) private likeModel: Model<LikeDocument>,
   ) {}
 
-  async getAllPosts(sortData: QueryPostsModel, id: string) {
-    const pageNumber = sortData.pageNumber ?? 1;
-    const pageSize = sortData.pageSize ?? 10;
-    const sortBy = sortData.sortBy ?? 'createdAt';
-    const sortDirection = sortData.sortDirection ?? 'desc';
+  async getAllPosts(
+    sortData: QueryPostsModel,
+    id: string,
+  ): Promise<PostPaginationModel> {
+    const pageNumber: number = sortData.pageNumber ?? 1;
+    const pageSize: number = sortData.pageSize ?? 10;
+    const sortBy: string = sortData.sortBy ?? 'createdAt';
+    const sortDirection: 'asc' | 'desc' = sortData.sortDirection ?? 'desc';
 
     const posts = await this.postModel
       .find()
@@ -32,9 +36,9 @@ export class PostMongoDbQueryRepository {
       .limit(+pageSize)
       .lean();
 
-    const totalCount = await this.postModel.countDocuments();
+    const totalCount: number = await this.postModel.countDocuments();
 
-    const pagesCount = Math.ceil(totalCount / +pageSize);
+    const pagesCount: number = Math.ceil(totalCount / +pageSize);
 
     const likesForPost = await this.likeModel.find().lean();
 
@@ -47,11 +51,14 @@ export class PostMongoDbQueryRepository {
     };
   }
 
-  async getPostsById(sortData: QueryPostsModel, id: string) {
-    const pageNumber = sortData.pageNumber ?? 1;
-    const pageSize = sortData.pageSize ?? 10;
-    const sortBy = sortData.sortBy ?? 'createdAt';
-    const sortDirection = sortData.sortDirection ?? 'desc';
+  async getPostsById(
+    sortData: QueryPostsModel,
+    id: string,
+  ): Promise<PostPaginationModel> {
+    const pageNumber: number = sortData.pageNumber ?? 1;
+    const pageSize: number = sortData.pageSize ?? 10;
+    const sortBy: string = sortData.sortBy ?? 'createdAt';
+    const sortDirection: 'asc' | 'desc' = sortData.sortDirection ?? 'desc';
 
     const posts = await this.postModel
       .find({ userId: id })
@@ -60,9 +67,9 @@ export class PostMongoDbQueryRepository {
       .limit(+pageSize)
       .lean();
 
-    const totalCount = await this.postModel.countDocuments();
+    const totalCount: number = await this.postModel.countDocuments();
 
-    const pagesCount = Math.ceil(totalCount / +pageSize);
+    const pagesCount: number = Math.ceil(totalCount / +pageSize);
 
     const likesForPost = await this.likeModel.find().lean();
 

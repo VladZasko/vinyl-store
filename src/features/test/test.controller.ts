@@ -1,10 +1,10 @@
 import { Controller, Delete, Get, Inject } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { User } from '../../db/entity/user.entity';
-import { Like } from '../../db/entity/like.entity';
+import { User } from '../../db/sql/entity/user.entity';
+import { Like } from '../../db/sql/entity/like.entity';
 import { TestSqlRepository } from './test.sql.repository';
 import { TestMongoDbQueryRepository } from './test.mongoDb.repository';
-import { Post } from '../../db/entity/post.entity';
+import { Post } from '../../db/sql/entity/post.entity';
 
 @Controller('test')
 export class TestController {
@@ -47,8 +47,8 @@ export class TestController {
         const post = new Post();
 
         post.fullName = `${newUser.lastName} ${newUser.firstName}`;
-        post.title = `lastName${i}`;
-        post.description = `lastName${i}`;
+        post.title = `title${i}`;
+        post.description = `description${i}`;
         post.userId = newUser.id;
         post.createdAt = new Date().toISOString();
 

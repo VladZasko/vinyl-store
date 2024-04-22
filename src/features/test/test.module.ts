@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Post } from '../../db/entity/post.entity';
-import { Like } from '../../db/entity/like.entity';
-import { User } from '../../db/entity/user.entity';
+import { Post } from '../../db/sql/entity/post.entity';
+import { Like } from '../../db/sql/entity/like.entity';
+import { User } from '../../db/sql/entity/user.entity';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
   UserMongoType,

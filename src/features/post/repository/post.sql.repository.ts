@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Post } from '../../../db/entity/post.entity';
-import { Like } from '../../../db/entity/like.entity';
+import { Post } from '../../../db/sql/entity/post.entity';
+import { Like } from '../../../db/sql/entity/like.entity';
 import { PostsType } from '../models/PostType';
+import { LikeUpdateModel } from '../models/input/LikeUpdateModel';
 
 @Injectable()
 export class PostSqlRepository {
@@ -14,19 +15,19 @@ export class PostSqlRepository {
     private readonly likeRepository: Repository<Like>,
   ) {}
 
-  async getPostById(id: string) {
+  async getPostById(id: string): Promise<Post> {
     return this.postRepository.findOneBy({ id: id });
   }
 
-  async createPost(createData: PostsType) {
+  async createPost(createData: PostsType): Promise<Post> {
     return this.postRepository.save(createData);
   }
 
-  async updatePost(upData: Post) {
+  async updatePost(upData: Post): Promise<Post> {
     return this.postRepository.save(upData);
   }
 
-  async findLike(likesData: any): Promise<Like> {
+  async findLike(likesData: LikeUpdateModel): Promise<Like> {
     return this.likeRepository
       .createQueryBuilder('like')
       .where('like.postId = :postId', { postId: likesData.postId })
@@ -34,7 +35,7 @@ export class PostSqlRepository {
       .getOne();
   }
 
-  async createLike(likesData: any): Promise<Like> {
+  async createLike(likesData: LikeUpdateModel): Promise<Like> {
     return this.likeRepository.save(likesData);
   }
 

@@ -1,5 +1,8 @@
+import { config } from 'dotenv';
 import * as nodemailer from 'nodemailer';
 import { UpdateUserModel } from '../models/input/UpdateUserModel';
+
+config();
 
 export class EmailAdapter {
   async sendNotification(

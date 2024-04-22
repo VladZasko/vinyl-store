@@ -18,14 +18,16 @@ import {
 import { PostsViewType } from './models/output/PostViewModel';
 import { CreatePostData, CreatePostDTO } from './models/input/CreatePostModel';
 import { UserSqlRepository } from '../user/repository/user.sql.repository';
-import { UpdatePostDTO } from './models/input/UpdatePostModel';
+import { UpdatePostType } from './models/input/UpdatePostModel';
 import { PostService } from './domain/post.service';
 import { PostSqlRepository } from './repository/post.sql.repository';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { QueryPostsModel } from './models/input/QueryPostModule';
-import { User } from '../../db/entity/user.entity';
+import { User } from '../../db/sql/entity/user.entity';
 import { PostsType } from './models/PostType';
 import { PostMongoDbQueryRepository } from './repository/post.mongoDb.query.repository';
+import { PostPaginationModel } from './models/output/PostPaginationModel';
+import { LikeUpdateModel } from './models/input/LikeUpdateModel';
 
 @Controller('posts')
 export class PostController {
@@ -39,11 +41,12 @@ export class PostController {
 
   @UseGuards(JwtAuthGuard)
   @Get('all-posts')
-  async getAllPosts(@Query() query: QueryPostsModel, @Request() req) {
-    const posts = await this.postMongoDbQueryRepository.getAllPosts(
-      query,
-      req.user.userId,
-    );
+  async getAllPosts(
+    @Query() query: QueryPostsModel,
+    @Request() req,
+  ): Promise<PostPaginationModel> {
+    const posts: PostPaginationModel =
+      await this.postMongoDbQueryRepository.getAllPosts(query, req.user.userId);
 
     if (!posts) throw new NotFoundException('Post not found');
 
@@ -53,11 +56,15 @@ export class PostController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get()
-  async getPosts(@Query() query: QueryPostsModel, @Request() req) {
-    const posts = await this.postMongoDbQueryRepository.getPostsById(
-      query,
-      req.user.userId,
-    );
+  async getPosts(
+    @Query() query: QueryPostsModel,
+    @Request() req,
+  ): Promise<PostPaginationModel> {
+    const posts: PostPaginationModel =
+      await this.postMongoDbQueryRepository.getPostsById(
+        query,
+        req.user.userId,
+      );
 
     if (!posts) throw new NotFoundException('Post not found');
 
@@ -99,7 +106,7 @@ export class PostController {
     if (post!.userId !== req.user!.userId)
       throw new ForbiddenException('Action prohibited for the specified post');
 
-    const upData: UpdatePostDTO = {
+    const upData: UpdatePostType = {
       id: postId,
       title: inputModel.title,
       description: inputModel.description,
@@ -119,7 +126,7 @@ export class PostController {
   ): Promise<void> {
     const user: User = await this.userRepository.getUserById(req.user.userId);
 
-    const upData = {
+    const upData: LikeUpdateModel = {
       userId: user!.id,
       postId: postId,
     };

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { User } from '../../db/entity/user.entity';
+import { User } from '../../db/sql/entity/user.entity';
 import { PostsType } from '../post/models/PostType';
-import { Post } from '../../db/entity/post.entity';
-import { Like } from '../../db/entity/like.entity';
+import { Post } from '../../db/sql/entity/post.entity';
+import { Like } from '../../db/sql/entity/like.entity';
 
 @Injectable()
 export class TestSqlRepository {

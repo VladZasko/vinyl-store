@@ -8,9 +8,9 @@ import { LocalStrategy } from './strategie/local.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Post } from '../../db/entity/post.entity';
-import { Like } from '../../db/entity/like.entity';
-import { User } from '../../db/entity/user.entity';
+import { Post } from '../../db/sql/entity/post.entity';
+import { Like } from '../../db/sql/entity/like.entity';
+import { User } from '../../db/sql/entity/user.entity';
 
 @Module({
   imports: [

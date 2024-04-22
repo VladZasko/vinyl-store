@@ -1,5 +1,5 @@
 import { UserViewModel } from '../../user/models/output/UserViewModel';
-import { User } from '../../../db/entity/user.entity';
+import { User } from '../../../db/sql/entity/user.entity';
 
 export const userAuthMapper = (userDb: User): UserViewModel => {
   return {

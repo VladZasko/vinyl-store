@@ -1,3 +1,4 @@
+import { config } from 'dotenv';
 import * as bcrypt from 'bcrypt';
 import { UserSqlRepository } from '../../user/repository/user.sql.repository';
 import { LoginAuthUserModel } from '../model/LoginAuthUserModel';
@@ -5,7 +6,9 @@ import { UserViewModel } from '../../user/models/output/UserViewModel';
 import { userAuthMapper } from '../mapper/mapper';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../../../db/entity/user.entity';
+import { User } from '../../../db/sql/entity/user.entity';
+
+config();
 
 @Injectable()
 export class AuthService {

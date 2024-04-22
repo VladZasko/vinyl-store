@@ -16,6 +16,8 @@ import {
   LikeMongoType,
 } from '../../../db/mongoDb/schemes/like.schemes';
 import { userQueryMapper } from '../mapper/user.query.mapper';
+import { ProfileViewModel } from '../models/output/ProfileViewModel';
+import { UsersPaginationModel } from '../models/output/UserPaginationModel';
 
 @Injectable()
 export class UserMongoDbQueryRepository {
@@ -25,17 +27,20 @@ export class UserMongoDbQueryRepository {
     @InjectModel(LikeMongoType.name) private likeModel: Model<LikeDocument>,
   ) {}
 
-  async getUserById(id: string) {
+  async getUserById(id: string): Promise<ProfileViewModel> {
     const findUser = await this.userModel.findOne({ _id: id });
 
     return meUserMapper(findUser);
   }
 
-  async getAllUser(sortData: QueryPostsModel, id: string) {
-    const pageNumber = sortData.pageNumber ?? 1;
-    const pageSize = sortData.pageSize ?? 10;
-    const sortBy = sortData.sortBy ?? 'createdAt';
-    const sortDirection = sortData.sortDirection ?? 'desc';
+  async getAllUser(
+    sortData: QueryPostsModel,
+    id: string,
+  ): Promise<UsersPaginationModel> {
+    const pageNumber: number = sortData.pageNumber ?? 1;
+    const pageSize: number = sortData.pageSize ?? 10;
+    const sortBy: string = sortData.sortBy ?? 'createdAt';
+    const sortDirection: 'asc' | 'desc' = sortData.sortDirection ?? 'desc';
 
     const users = await this.userModel
       .find()
@@ -44,9 +49,9 @@ export class UserMongoDbQueryRepository {
       .limit(+pageSize)
       .lean();
 
-    const totalCount = await this.userModel.countDocuments();
+    const totalCount: number = await this.userModel.countDocuments();
 
-    const pagesCount = Math.ceil(totalCount / +pageSize);
+    const pagesCount: number = Math.ceil(totalCount / +pageSize);
 
     const postForUser = await this.postModel.find().lean();
 

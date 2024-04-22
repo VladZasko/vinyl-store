@@ -12,7 +12,7 @@ export class UserMongoDbRepository {
   constructor(
     @InjectModel(UserMongoType.name) private userModel: Model<UserDocument>,
   ) {}
-  async createUser(createData: any): Promise<boolean> {
+  async createUser(createData: UserMongoType): Promise<boolean> {
     const user = new this.userModel(createData);
     await user.save();
 
