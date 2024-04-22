@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"login\": \"Wertyu\",\r\n  \"password\": \"qwerty\",\r\n  \"email\": \"vlad.zasko@gmail.com\",\r\n  \"lastName\": \"Zasko\",\r\n  \"firstName\": \"Uladzislau\"\r\n}",
+					"raw": "{\r\n  \"login\": \"login\",\r\n  \"password\": \"qwerty\",\r\n  \"email\": \"vlad.zasko1@gmail.com\",\r\n  \"lastName\": \"lastName2\",\r\n  \"firstName\": \"firstName2\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -39,7 +39,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"email\": \"vlad.zasko1@gmail.com\",\r\n  \"password\": \"qwerty\"\r\n}",
+					"raw": "{\r\n  \"email\": \"email0@gmail.com\",\r\n  \"password\": \"qwerty\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -47,9 +47,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{LEVER_USER}}/login",
+					"raw": "{{LEVER_AUTH}}/login",
 					"host": [
-						"{{LEVER_USER}}"
+						"{{LEVER_AUTH}}"
 					],
 					"path": [
 						"login"
@@ -66,7 +66,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5OWMyMWVkNi1kNmExLTQxMmQtODhmZS0zMzdmMWE2Y2NmNmYiLCJpYXQiOjE3MTI4ODExNDMsImV4cCI6MTcxMjg4MjE0M30.utneWe0AfrT7zmK92TmpgXNipuZ5-LicYRvKfSk09S4",
+							"value": "{{JWT}}",
 							"type": "string"
 						}
 					]
@@ -93,7 +93,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5OWMyMWVkNi1kNmExLTQxMmQtODhmZS0zMzdmMWE2Y2NmNmYiLCJpYXQiOjE3MTI4ODExNDMsImV4cCI6MTcxMjg4MjE0M30.utneWe0AfrT7zmK92TmpgXNipuZ5-LicYRvKfSk09S4",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYWMwYjliYi1lYjU2LTRiNWEtOTM0Zi0wMjYwMjg1MDA2YWQiLCJpYXQiOjE3MTM3MjQ0OTcsImV4cCI6MTcxMzcyNTQ5N30.HtI2o1Tnv8UpExfrIxyqUTsceznUDHER0kcU1-jN3-8",
 							"type": "string"
 						}
 					]
@@ -129,7 +129,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5OWMyMWVkNi1kNmExLTQxMmQtODhmZS0zMzdmMWE2Y2NmNmYiLCJpYXQiOjE3MTI4ODExNDMsImV4cCI6MTcxMjg4MjE0M30.utneWe0AfrT7zmK92TmpgXNipuZ5-LicYRvKfSk09S4",
+							"value": "{{JWT}}",
 							"type": "string"
 						}
 					]
@@ -137,9 +137,30 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{LEVER_POST}}",
+					"raw": "{{LEVER_POST}}?pageSize=10",
 					"host": [
 						"{{LEVER_POST}}"
+					],
+					"query": [
+						{
+							"key": "pageSize",
+							"value": "10"
+						},
+						{
+							"key": "pageNumber",
+							"value": "2",
+							"disabled": true
+						},
+						{
+							"key": "sortBy",
+							"value": "createdAt",
+							"disabled": true
+						},
+						{
+							"key": "sortDirection",
+							"value": "asc",
+							"disabled": true
+						}
 					]
 				}
 			},
@@ -153,7 +174,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5OWMyMWVkNi1kNmExLTQxMmQtODhmZS0zMzdmMWE2Y2NmNmYiLCJpYXQiOjE3MTI4ODExNDMsImV4cCI6MTcxMjg4MjE0M30.utneWe0AfrT7zmK92TmpgXNipuZ5-LicYRvKfSk09S4",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYWMwYjliYi1lYjU2LTRiNWEtOTM0Zi0wMjYwMjg1MDA2YWQiLCJpYXQiOjE3MTM3MzEzMDQsImV4cCI6MTcxMzczMjMwNH0.iKlu_OZGcmUYlrZKHRg3pxo8glRogLQXURK4aHzfd-k",
 							"type": "string"
 						}
 					]
@@ -162,7 +183,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"title\": \"Test Post1\",\r\n  \"description\": \"Test1 Test Test Test\"\r\n}",
+					"raw": "{\r\n  \"title\": \"Test Post3\",\r\n  \"description\": \"Test1 Test Test Test\"\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -186,7 +207,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5OWMyMWVkNi1kNmExLTQxMmQtODhmZS0zMzdmMWE2Y2NmNmYiLCJpYXQiOjE3MTI4ODExNDMsImV4cCI6MTcxMjg4MjE0M30.utneWe0AfrT7zmK92TmpgXNipuZ5-LicYRvKfSk09S4",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYWMwYjliYi1lYjU2LTRiNWEtOTM0Zi0wMjYwMjg1MDA2YWQiLCJpYXQiOjE3MTM3MjgyNTgsImV4cCI6MTcxMzcyOTI1OH0.CYJ-Ig_q6mpdYUcrO2p3rBaU4b-2aI9217DT85gQPco",
 							"type": "string"
 						}
 					]
@@ -203,9 +224,9 @@
 					}
 				},
 				"url": {
-					"raw": "{{LEVER_POST}}362ccfca-4515-486e-a0da-147280d9f0d7",
+					"raw": "{{LEVER_POST}}e0bb8bef-e66b-45a5-8805-452345a470a6",
 					"host": [
-						"{{LEVER_POST}}362ccfca-4515-486e-a0da-147280d9f0d7"
+						"{{LEVER_POST}}e0bb8bef-e66b-45a5-8805-452345a470a6"
 					]
 				}
 			},
@@ -219,7 +240,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5OWMyMWVkNi1kNmExLTQxMmQtODhmZS0zMzdmMWE2Y2NmNmYiLCJpYXQiOjE3MTI4ODExNDMsImV4cCI6MTcxMjg4MjE0M30.utneWe0AfrT7zmK92TmpgXNipuZ5-LicYRvKfSk09S4",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYWMwYjliYi1lYjU2LTRiNWEtOTM0Zi0wMjYwMjg1MDA2YWQiLCJpYXQiOjE3MTM3MjgyNTgsImV4cCI6MTcxMzcyOTI1OH0.CYJ-Ig_q6mpdYUcrO2p3rBaU4b-2aI9217DT85gQPco",
 							"type": "string"
 						}
 					]
@@ -227,9 +248,9 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{LEVER_POST}}958a5d52-f00f-4a04-9761-5df6b84df5cc",
+					"raw": "{{LEVER_POST}}e0bb8bef-e66b-45a5-8805-452345a470a6",
 					"host": [
-						"{{LEVER_POST}}958a5d52-f00f-4a04-9761-5df6b84df5cc"
+						"{{LEVER_POST}}e0bb8bef-e66b-45a5-8805-452345a470a6"
 					]
 				}
 			},
@@ -243,7 +264,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMGI0NDJlYy01ODBlLTQ4ZmItOWY3ZC1mYzdmNmFmZDUxMWEiLCJpYXQiOjE3MTI4ODEyOTUsImV4cCI6MTcxMjg4MjI5NX0.pj5_8iyV8f-oHPaViARVusLdFjIlgECQFmiRJlxeYwM",
+							"value": "{{JWT}}",
 							"type": "string"
 						}
 					]
@@ -251,9 +272,30 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{LEVER_POST}}all-posts",
+					"raw": "{{LEVER_POST}}all-posts?pageSize=30",
 					"host": [
 						"{{LEVER_POST}}all-posts"
+					],
+					"query": [
+						{
+							"key": "pageSize",
+							"value": "30"
+						},
+						{
+							"key": "pageNumber",
+							"value": "4",
+							"disabled": true
+						},
+						{
+							"key": "sortBy",
+							"value": "createdAt",
+							"disabled": true
+						},
+						{
+							"key": "sortDirection",
+							"value": "DESC",
+							"disabled": true
+						}
 					]
 				}
 			},
@@ -267,7 +309,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMGI0NDJlYy01ODBlLTQ4ZmItOWY3ZC1mYzdmNmFmZDUxMWEiLCJpYXQiOjE3MTI4ODEyOTUsImV4cCI6MTcxMjg4MjI5NX0.pj5_8iyV8f-oHPaViARVusLdFjIlgECQFmiRJlxeYwM",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYWMwYjliYi1lYjU2LTRiNWEtOTM0Zi0wMjYwMjg1MDA2YWQiLCJpYXQiOjE3MTM3MzEzMDQsImV4cCI6MTcxMzczMjMwNH0.iKlu_OZGcmUYlrZKHRg3pxo8glRogLQXURK4aHzfd-k",
 							"type": "string"
 						}
 					]
@@ -275,12 +317,70 @@
 				"method": "PUT",
 				"header": [],
 				"url": {
-					"raw": "{{LEVER_POST}}d67e4092-5bd5-47ca-aba6-f9ac6a9138b6/like-status",
+					"raw": "{{LEVER_POST}}379f026b-957b-4360-b3d3-5edf1b655b36/like-status",
 					"host": [
-						"{{LEVER_POST}}d67e4092-5bd5-47ca-aba6-f9ac6a9138b6"
+						"{{LEVER_POST}}379f026b-957b-4360-b3d3-5edf1b655b36"
 					],
 					"path": [
 						"like-status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllUsers",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{JWT}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{LEVER_USER}}",
+					"host": [
+						"{{LEVER_USER}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete-all-data",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{LEVER_TEST}}/delete-all-data",
+					"host": [
+						"{{LEVER_TEST}}"
+					],
+					"path": [
+						"delete-all-data"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "fillData",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{LEVER_TEST}}/fillBd",
+					"host": [
+						"{{LEVER_TEST}}"
+					],
+					"path": [
+						"fillBd"
 					]
 				}
 			},
