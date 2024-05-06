@@ -1,20 +1,15 @@
-type FirstReviewType = {
-  author: string;
-  content: string;
-};
-
-export type VinylsAllUserType = {
+export type VinylsType = {
+  id: string;
   title: string;
   author: string;
   description: string;
   price: number;
-  average: number;
-  firstReview: FirstReviewType | 'None';
+  createdAt: string;
 };
-export type VinylsAllUsersViewModel = {
+export type VinylsViewModel = {
   pagesCount: number;
   page: number;
   pageSize: number;
   totalCount: number;
-  items: VinylsAllUserType[];
+  items: VinylsType[];
 };

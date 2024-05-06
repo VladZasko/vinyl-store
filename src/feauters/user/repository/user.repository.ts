@@ -2,123 +2,69 @@ import { Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UserDBType, UserDocument } from '../../../db/schemes/user.schemes';
-import {
-  RefreshTokenMetaDBType,
-  RefreshTokenMetaDocument,
-} from '../../../db/schemes/token.schemes';
 import { ObjectId } from 'mongodb';
-import { CreateUserDto } from '../model/dto/CreateUserDto';
-import { UserViewModel } from '../model/output/UserViewModel';
-import { userMapper } from '../mapper/user.mapper';
+import { UpdateUserModel } from '../model/input/UpdateUserModel';
+import { CreateUserDto } from '../../auth/model/dto/CreateUserDto';
+import { userMapper } from '../../auth/mapper/user.mapper';
+import { UserViewModel } from '../../auth/model/output/UserViewModel';
 
 @Injectable()
-export class AuthRepository {
+export class UserRepository {
   constructor(
     @InjectModel(UserDBType.name) private userModel: Model<UserDocument>,
-    @InjectModel(RefreshTokenMetaDBType.name)
-    private refreshTokenMetaModel: Model<RefreshTokenMetaDocument>,
+    // @InjectModel(UserArchiveDBType.name)
+    // private userArchiveModel: Model<UserArchiveDocument>,
   ) {}
 
-  async createUser(createData: CreateUserDto): Promise<UserViewModel> {
-    const user = await this.userModel.create({ ...createData });
-
-    return userMapper(user);
-  }
-
-  async updateConfirmation(_id: ObjectId) {
-    const result = await this.userModel.updateOne(
-      { _id },
-      { $set: { 'emailConfirmation.isConfirmed': true } },
-    );
-    return result.modifiedCount === 1;
-  }
-
-  async newConfirmationCode(
-    _id: ObjectId,
-    data: Date,
-    newConfirmationCode: string,
-  ) {
-    const result = await this.userModel.updateOne(
-      { _id },
+  async updateUser(userId: string, updateData: UpdateUserModel) {
+    const updateUser = await this.userModel.updateOne(
+      { _id: new ObjectId(userId) },
       {
         $set: {
-          'emailConfirmation.confirmationCode': newConfirmationCode,
-          'emailConfirmation.expirationDate': data,
+          'accountData.lastName': updateData.lastName,
+          'accountData.firstName': updateData.firstName,
+          'accountData.dateOfBirth': updateData.dateOfBirth,
         },
       },
     );
-
-    return result.modifiedCount === 1;
+    return !!updateUser.matchedCount;
   }
 
-  async updatePassword(user: any, salt: string, hash: string) {
-    const result = await this.userModel.updateOne(
-      { _id: new ObjectId(user.id) },
+  async updateAvatar(userId: string, updateData: string) {
+    const updateUser = await this.userModel.updateOne(
+      { _id: new ObjectId(userId) },
       {
         $set: {
-          'accountData.passwordHash': hash,
-          'accountData.passwordSalt': salt,
-        },
-        $unset: {
-          passwordRecovery: 1,
+          'accountData.avatar': updateData,
         },
       },
     );
-    return result.modifiedCount === 1;
+    return !!updateUser.matchedCount;
   }
 
-  async passwordRecovery(
-    _id: ObjectId,
-    passwordRecoveryCode: string,
-    expirationDate: Date,
-  ) {
-    const result = await this.userModel.updateOne(
-      { _id },
-      {
-        $set: {
-          'passwordRecovery.recoveryCode': passwordRecoveryCode,
-          'passwordRecovery.expirationDate': expirationDate,
-        },
-      },
-    );
-
-    return result.modifiedCount === 1;
-  }
-
-  async createRefreshTokensMeta(refreshTokenDto: any) {
-    return this.refreshTokenMetaModel.insertMany(refreshTokenDto);
-  }
-  async updateRefreshTokensMeta(refreshTokenDto: any) {
-    return this.refreshTokenMetaModel.updateOne(
-      { deviceId: refreshTokenDto.deviceId },
-      {
-        $set: {
-          issuedAt: refreshTokenDto.issuedAt,
-          userId: refreshTokenDto.userId,
-          deviseName: refreshTokenDto.deviseName,
-        },
-      },
-    );
-  }
-
-  async deleteRefreshTokensMeta(userId: string) {
-    return this.refreshTokenMetaModel.deleteOne({ userId });
-  }
-
-  async findUserByConfirmationCode(emailConfirmationCode: string) {
-    return this.userModel.findOne({
-      'emailConfirmation.confirmationCode': emailConfirmationCode,
+  async findUserById(id: string): Promise<UserViewModel> {
+    const findUser = await this.userModel.findOne({
+      _id: new ObjectId(id),
     });
+
+    if (!findUser) {
+      return null;
+    }
+
+    return userMapper(findUser);
   }
 
-  async findUserByRecoveryCode(recoveryCode: string) {
-    return this.userModel.findOne({
-      'passwordRecovery.recoveryCode': recoveryCode,
-    });
+  async archiveUser(createData: CreateUserDto): Promise<boolean> {
+    await this.userModel.create({ ...createData });
+
+    return true;
   }
-  async findByEmail(email: string) {
-    return this.userModel.findOne({
-      'accountData.email': email,
+
+  async deleteUserById(id: string): Promise<boolean> {
+    const deleteUser = await this.userModel.deleteOne({
+      _id: new ObjectId(id),
     });
+
+    return !!deleteUser.deletedCount;
   }
 }

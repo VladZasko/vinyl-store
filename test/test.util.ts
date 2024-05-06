@@ -1,5 +1,6 @@
 import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import mongoose from 'mongoose';
 
 let mongod: MongoMemoryServer;
 
@@ -8,6 +9,8 @@ export const rootMongooseTestModule = (options: MongooseModuleOptions = {}) =>
     useFactory: async () => {
       mongod = await MongoMemoryServer.create();
       const mongoUri = mongod.getUri();
+      //await mongoose.connect(mongoUri);
+
       return {
         uri: mongoUri,
         ...options,
@@ -16,5 +19,6 @@ export const rootMongooseTestModule = (options: MongooseModuleOptions = {}) =>
   });
 
 export const closeInMongodConnection = async () => {
-  await mongod.stop();
+  await mongoose.disconnect();
+  if (mongod) await mongod.stop();
 };

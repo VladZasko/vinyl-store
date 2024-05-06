@@ -10,7 +10,7 @@ export enum Entity {
   Review = 'Review',
 }
 
-export type addLogsDtoType = {
+export type AddLogsDto = {
   actions: Actions;
   entity: Entity;
   userId: string;

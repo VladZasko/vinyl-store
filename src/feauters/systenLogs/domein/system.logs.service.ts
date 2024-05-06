@@ -1,20 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel, Prop } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import {
-  SystemLogsDBType,
-  SystemLogsDocument,
-} from '../../db/schemes/system.logs.schemes';
-import { addLogsDtoType } from './model/input/AddLogsDto';
+import { AddLogsDto } from '../model/dto/AddLogsDto';
+import { SystemLogsRepository } from '../repository/system.logs.remository';
 
 @Injectable()
 export class SystemLogsService {
-  constructor(
-    @InjectModel(SystemLogsDBType.name)
-    private systemLogsModel: Model<SystemLogsDocument>,
-  ) {}
+  constructor(protected systemLogsRepository: SystemLogsRepository) {}
 
-  async addLogs(addLogsDto: addLogsDtoType) {
+  async addLogs(addLogsDto: AddLogsDto) {
     const newLogs = {
       actions: addLogsDto.actions,
       entity: addLogsDto.entity,
@@ -22,9 +14,6 @@ export class SystemLogsService {
       createdAt: new Date().toISOString(),
     };
 
-    const addLogs = await this.systemLogsModel.create(newLogs);
-    await addLogs.save();
-
-    return;
+    return this.systemLogsRepository.addSystemLogs(newLogs);
   }
 }

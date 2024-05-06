@@ -1,9 +1,6 @@
-export type UserViewModel = {
-  id: string;
-  login: string;
+export type UserProfileViewModel = {
+  avatar: string;
   lastName: string;
   firstName: string;
   dateOfBirth: string;
-  email: string;
-  createdAt: string;
 };

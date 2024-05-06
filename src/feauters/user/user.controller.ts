@@ -1,166 +1,154 @@
 import {
   Controller,
-  HttpCode,
-  HttpStatus,
-  Post,
   UseGuards,
   Request,
-  Response,
-  Body,
   UnauthorizedException,
-  BadRequestException,
-  NotFoundException,
   Get,
+  Put,
+  HttpCode,
+  HttpStatus,
+  Body,
+  BadRequestException,
+  Delete,
+  NotFoundException,
+  Query,
+  UseInterceptors,
+  UploadedFile,
+  ParseFilePipeBuilder,
 } from '@nestjs/common';
-import { LocalAuthGuard } from './guard/local-auth.guard';
-import { AuthService } from './domain/auth.service';
-import { newPasswordModel } from './model/input/NewPasswordModel';
-import { RefreshTokenGuard } from './guard/refresh-token.guard';
-import { CreateUserModel } from './model/input/CreateAuthUserModel';
-import { JwtAuthGuard } from './guard/jwt-auth.guard';
-import { AuthQueryRepository } from './repository/auth.query.repository';
+import { UserService } from './domain/user.service';
+import { UserQueryRepository } from './repository/user.query.repository';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
+import { UpdateUserModel } from './model/input/UpdateUserModel';
+import { QueryVinylModel } from '../vinyl/model/input/QueryVinylModel';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Express } from 'express';
+import {
+  Actions,
+  AddLogsDto,
+  Entity,
+} from '../systenLogs/model/dto/AddLogsDto';
+import { SystemLogsService } from '../systenLogs/domein/system.logs.service';
+import { UserProfileViewModel } from './model/output/UserProfileViewModel';
+import { MyReviewViewModel } from './model/output/MyReviewViewModel';
+import { MyVinylViewModel } from './model/output/MyVinylViewModel';
 
-@Controller('auth')
-export class AuthController {
+@Controller('user')
+export class UserController {
   constructor(
-    protected authService: AuthService,
-    protected authQueryRepository: AuthQueryRepository,
+    protected userService: UserService,
+    protected systemLogsService: SystemLogsService,
+    protected userQueryRepository: UserQueryRepository,
   ) {}
-
-  @UseGuards(LocalAuthGuard)
-  @HttpCode(HttpStatus.OK)
-  @Post('login')
-  async login(@Request() req, @Response({ passthrough: true }) res) {
-    const accessToken = await this.authService.login(req.user.id);
-
-    const dataRefreshToken = {
-      issuedAt: new Date().toISOString(),
-      userId: req.user.id,
-      deviseName: req.headers['user-agent'] ?? 'Device',
-    };
-
-    const refreshToken = await this.authService.refreshToken(dataRefreshToken);
-
-    await this.authService.createRefreshTokensMeta(dataRefreshToken);
-
-    res
-      .cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        secure: true,
-      })
-      .send({
-        accessToken: accessToken,
-      });
-  }
-
-  @UseGuards(RefreshTokenGuard)
-  @HttpCode(HttpStatus.OK)
-  @Post('refresh-token')
-  async refreshToken(@Request() req, @Response({ passthrough: true }) res) {
-    const dataRefreshToken = {
-      issuedAt: new Date().toISOString(),
-      ...req.refreshTokenMeta,
-    };
-
-    try {
-      const accessToken = await this.authService.login(req.userId);
-      const newRefreshToken =
-        await this.authService.refreshToken(dataRefreshToken);
-      await this.authService.updateRefreshTokensMeta(dataRefreshToken);
-
-      res
-        .cookie('refreshToken', newRefreshToken, {
-          httpOnly: true,
-          secure: true,
-        })
-        .send({
-          accessToken: accessToken,
-        });
-    } catch (error) {
-      throw new UnauthorizedException([
-        {
-          message: 'Access Denied. No refresh token provided.',
-          field: 'refreshToken',
-        },
-      ]);
-    }
-
-    return;
-  }
-
-  @Post('registration')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async registration(@Body() inputModel: CreateUserModel) {
-    const dateOfBirth = new Date(inputModel.dateOfBirth);
-    console.log(dateOfBirth);
-    const newUser = await this.authService.createUser(inputModel);
-
-    if (!newUser) {
-      throw new BadRequestException('User not create');
-    }
-
-    return newUser;
-  }
-
-  @Post('registration-confirmation')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async registrationConfirmation(@Body('code') code: string) {
-    const result = await this.authService.sendConfirmationCode(code);
-
-    if (!result) {
-      throw new BadRequestException([
-        { message: 'Confirmation code is incorrect', field: 'code' },
-      ]);
-    }
-    return;
-  }
-
-  @Post('registration-email-resending')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async registrationEmailResending(@Body('email') email: string) {
-    const result = await this.authService.resendingConfirmationCode(email);
-    if (result) {
-      return;
-    } else {
-      throw new BadRequestException([
-        { message: 'email dont sent', field: 'email' },
-      ]);
-    }
-  }
-
-  @Post('password-recovery')
-  async passwordRecovery(@Body() email: string) {
-    await this.authService.recoveryPassword(email);
-    return;
-  }
-  @Post('new-password')
-  async newPassword(@Body() inputModel: newPasswordModel) {
-    await this.authService.updatePassword(inputModel);
-    return;
-  }
-
-  @UseGuards(RefreshTokenGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @Post('logout')
-  async logout(@Request() req) {
-    const foundDevice = await this.authService.deleteRefreshTokensMeta(
-      req.refreshTokenMeta!.userId,
-    );
-    if (!foundDevice) {
-      throw new NotFoundException();
-    }
-    return;
-  }
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async me(@Request() req) {
-    const user = await this.authQueryRepository.getUserById(req.user.userId);
+    const user: UserProfileViewModel =
+      await this.userQueryRepository.getUserById(req.user.userId);
+
+    if (!user) throw new NotFoundException('User not found');
+
+    return user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('my-review')
+  async myReview(
+    @Request() req,
+    @Query() query: QueryVinylModel,
+  ): Promise<MyReviewViewModel> {
+    const user: MyReviewViewModel = await this.userQueryRepository.getMyReview(
+      req.user.userId,
+      query,
+    );
     if (!user) throw new UnauthorizedException();
-    return {
-      email: user.email,
-      login: user.login,
-      userId: user.id,
+    return user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('my-vinyls')
+  async myVinyls(
+    @Request() req,
+    @Query() query: QueryVinylModel,
+  ): Promise<MyVinylViewModel> {
+    const user: MyVinylViewModel = await this.userQueryRepository.myVinyls(
+      req.user.userId,
+      query,
+    );
+    if (!user) throw new UnauthorizedException();
+    return user;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('upload-avatar')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: null,
+    }),
+  )
+  async uploadFile(
+    @Request() req,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({ fileType: 'image/jpeg' })
+        .addMaxSizeValidator({ maxSize: 2 * 1024 * 1024 })
+        .build({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY }),
+    )
+    file: Express.Multer.File,
+  ) {
+    const logsData: AddLogsDto = {
+      actions: Actions.Update,
+      entity: Entity.User,
+      userId: req.user.userId,
     };
+    await this.systemLogsService.addLogs(logsData);
+
+    return this.userService.uploadAvatar(req.user.userId, file);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('update-profile')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updateUser(
+    @Request() req,
+    @Body() inputModel: UpdateUserModel,
+  ): Promise<void> {
+    const updateUser: boolean = await this.userService.updateUser(
+      req.user.userId,
+      inputModel,
+    );
+
+    if (!updateUser) throw new BadRequestException('User not update');
+
+    const logsData: AddLogsDto = {
+      actions: Actions.Update,
+      entity: Entity.User,
+      userId: req.user.userId,
+    };
+    await this.systemLogsService.addLogs(logsData);
+
+    return;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteUser(@Request() req): Promise<boolean> {
+    const deleteUser: boolean = await this.userService.deleteUserById(
+      req.user.userId,
+    );
+    if (deleteUser === false) {
+      throw new NotFoundException('User not found');
+    }
+
+    const logsData: AddLogsDto = {
+      actions: Actions.Delete,
+      entity: Entity.User,
+      userId: req.user.userId,
+    };
+    await this.systemLogsService.addLogs(logsData);
+
+    return deleteUser;
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import { TelegramNotificationType } from '../../vinyl/model/dto/TelegramNotificationDto';
+import { TelegramNotificationType } from '../feauters/vinyl/model/dto/TelegramNotificationDto';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()

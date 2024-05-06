@@ -1,6 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
-import { EmailAdapterDto } from '../model/input/EmailAdapterDto';
+import { EmailAdapterDto } from '../feauters/auth/model/input/EmailAdapterDto';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

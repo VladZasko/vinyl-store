@@ -1,14 +1,11 @@
-import { UserViewModel } from '../model/output/UserViewModel';
 import { UserDBType } from '../../../db/schemes/user.schemes';
-
-export const userMapper = (userDb: UserDBType): UserViewModel => {
+import { UserProfileViewModel } from '../model/output/UserProfileViewModel';
+import * as moment from 'moment';
+export const userProfileMapper = (userDb: UserDBType): UserProfileViewModel => {
   return {
-    id: userDb._id.toString(),
-    login: userDb.accountData.login,
+    avatar: userDb.accountData.avatar,
     lastName: userDb.accountData.lastName,
     firstName: userDb.accountData.firstName,
-    dateOfBirth: userDb.accountData.dateOfBirth,
-    email: userDb.accountData.email,
-    createdAt: userDb.accountData.createdAt,
+    dateOfBirth: moment(userDb.accountData.dateOfBirth).format('MM/DD/YYYY'),
   };
 };

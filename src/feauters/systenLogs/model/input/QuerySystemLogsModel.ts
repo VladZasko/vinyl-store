@@ -1,6 +1,6 @@
-import { Actions, Entity } from './AddLogsDto';
+import { Actions, Entity } from '../dto/AddLogsDto';
 
-export type QueryVinylModel = {
+export type QuerySystemLogsModel = {
   actions?: Actions;
   entity?: Entity;
   sortBy?: string;

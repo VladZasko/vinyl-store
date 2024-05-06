@@ -1,4 +1,4 @@
-export type QueryVinylModel = {
+export type QueryVinylUnauthorizedModel = {
   pageNumber?: number;
   pageSize?: number;
 };
