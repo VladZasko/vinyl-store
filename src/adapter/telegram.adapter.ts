@@ -9,14 +9,17 @@ export class TelegramAdapter {
   async sendMessage(telegramNotificationDto: TelegramNotificationType) {
     const token = this.configService.get('telegram.TELEGRAM_TOKEN');
 
-    const text = `New record! 
-    ${telegramNotificationDto.title}  
-    ${telegramNotificationDto.description} 
-    ${this.configService.get('serveo.SERVEO_URL')}/vinyl/${telegramNotificationDto.vinylId} 
-    ${telegramNotificationDto.price}`;
+    const text = ` **New release!!** 
+    
+**${telegramNotificationDto.title}** - ${telegramNotificationDto.description} 
+[Listen now](${this.configService.get('serveo.SERVEO_URL')}/vinyl/${telegramNotificationDto.vinylId}) 
+
+Price: ${telegramNotificationDto.price}`;
+
     await axios.post(`https://api.telegram.org/bot${token}/sendMessage`, {
       chat_id: this.configService.get('telegram.TELEGRAM_CHAT_ID'),
       text: text,
+      parse_mode: 'Markdown',
     });
   }
 }
