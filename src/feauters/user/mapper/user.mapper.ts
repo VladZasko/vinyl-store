@@ -1,6 +1,6 @@
 import { UserDBType } from '../../../db/schemes/user.schemes';
 import { UserProfileViewModel } from '../model/output/UserProfileViewModel';
-import * as moment from 'moment';
+import moment from 'moment';
 export const userProfileMapper = (userDb: UserDBType): UserProfileViewModel => {
   return {
     avatar: userDb.accountData.avatar,

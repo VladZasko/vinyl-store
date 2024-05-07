@@ -1,6 +1,6 @@
 import { UserDBType } from '../../../db/schemes/user.schemes';
 import { UserViewModel } from '../model/output/UserViewModel';
-import * as moment from 'moment/moment';
+import moment from 'moment/moment';
 
 export const userMapper = (user: UserDBType): UserViewModel => {
   return {
