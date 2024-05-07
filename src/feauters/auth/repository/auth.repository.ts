@@ -7,7 +7,7 @@ import {
   RefreshTokenMetaDocument,
 } from '../../../db/schemes/token.schemes';
 import { ObjectId } from 'mongodb';
-import { CreateUserDto } from '../model/dto/CreateUserDto';
+import { CreateUserDto, RoleForUser } from '../model/dto/CreateUserDto';
 import { UserViewModel } from '../model/output/UserViewModel';
 import { userMapper } from '../mapper/user.mapper';
 import { RefreshTokenDto } from '../model/dto/RefreshTokenDto';
@@ -85,6 +85,14 @@ export class AuthRepository {
   async findByEmail(email: string) {
     return this.userModel.findOne({
       'accountData.email': email,
+    });
+  }
+
+  async updateRole(user: any) {
+    const updateRole = await this.userModel.updateOne(user._id, {
+      $set: {
+        'accountData.role': RoleForUser.Admin,
+      },
     });
   }
 
