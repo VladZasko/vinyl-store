@@ -14,6 +14,7 @@ import { configuration } from './configuration/configuration';
 import { StorageModule } from './feauters/storage/storage.module';
 import { SystemLogsModule } from './feauters/systenLogs/system.logs.module';
 import { StripeModule } from './feauters/stripe/stripe.module';
+import { SeedsModule } from './admin/admin.module';
 
 config();
 
@@ -47,6 +48,7 @@ config();
     StorageModule,
     SystemLogsModule,
     StripeModule,
+    SeedsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
