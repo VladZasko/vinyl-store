@@ -10,6 +10,7 @@ async function bootstrap() {
     rawBody: true,
   });
 
+  app.enableCors();
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe());
   app.useStaticAssets(join(__dirname, '..', 'public'), {
