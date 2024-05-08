@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Command, Positional } from 'nestjs-command';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserDBType, UserDocument } from '../db/schemes/user.schemes';
+import { UserDBType, UserDocument } from '../../db/schemes/user.schemes';
 import { Model } from 'mongoose';
-import { RoleForUser } from '../feauters/auth/model/dto/CreateUserDto';
+import { RoleForUser } from '../../feauters/auth/model/dto/CreateUserDto';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 

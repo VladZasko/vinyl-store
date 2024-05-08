@@ -3,8 +3,8 @@ import { Command } from 'nestjs-command';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { ConfigService } from '@nestjs/config';
-import { vinylTestData } from './vinyl.test.data';
-import { VinylDBType, VinylDocument } from '../db/schemes/vinyl.shemes';
+import { vinylTestData } from '../utils/vinyl.test.data';
+import { VinylDBType, VinylDocument } from '../../db/schemes/vinyl.shemes';
 
 @Injectable()
 export class SeedVinyl {
