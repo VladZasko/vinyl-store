@@ -28,6 +28,7 @@ export class EmailAdapter {
         `     <a href=\'https://somesite.com/confirm-email?code=${newUser.confirmationCode}\'>complete registration</a>` +
         ' </p>',
     });
+
     return true;
   }
   async sendNewCode(user: EmailAdapterDto): Promise<boolean> {
