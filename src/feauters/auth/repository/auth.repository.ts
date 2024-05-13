@@ -29,7 +29,12 @@ export class AuthRepository {
   async updateConfirmation(_id: ObjectId) {
     const result = await this.userModel.updateOne(
       { _id },
-      { $set: { 'emailConfirmation.isConfirmed': true } },
+      {
+        $set: {
+          'accountData.role': RoleForUser.Costumer,
+          'emailConfirmation.isConfirmed': true,
+        },
+      },
     );
     return result.modifiedCount === 1;
   }

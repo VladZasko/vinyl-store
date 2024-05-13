@@ -104,7 +104,7 @@ export class AuthService {
         dateOfBirth: new Date(inputModel.dateOfBirth).toISOString(),
         createdAt: new Date().toISOString(),
         avatar: this.configService.get('aws.DEFAULT_AVATAR'),
-        role: RoleForUser.Costumer,
+        role: RoleForUser.NotConfirmUser,
         passwordHash,
         passwordSalt,
       },

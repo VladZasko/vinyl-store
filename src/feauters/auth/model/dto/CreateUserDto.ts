@@ -1,5 +1,6 @@
 export enum RoleForUser {
   Costumer = 'costumer',
+  NotConfirmUser = 'notConfirmUser',
   Admin = 'admin',
 }
 

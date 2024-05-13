@@ -113,7 +113,8 @@ export class VinylController {
     return newVinyl;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles('admin', 'costumer')
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @Post(':id/review')
   async createReviewByVinyl(
     @Request() req,
@@ -146,7 +147,8 @@ export class VinylController {
     return newReview;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles('admin', 'costumer')
+  @UseGuards(JwtAuthGuard, RoleGuard)
   @Post(':id/buy')
   async buyVinyl(@Request() req, @Param('id') vinylId: string) {
     const findVinyl = await this.vinylQueryRepository.getVinylById(vinylId);
