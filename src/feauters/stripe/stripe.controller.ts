@@ -19,7 +19,7 @@ export class StripeController {
 
   @Get('success')
   async success() {
-    return 'Greate. You bought the best product. Check you products page';
+    return 'Great. You bought the best product. Check you products page';
   }
   @Get('error')
   async error() {
