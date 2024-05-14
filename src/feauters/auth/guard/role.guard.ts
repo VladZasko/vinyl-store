@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthRepository } from '../repository/auth.repository';
 
@@ -21,6 +26,9 @@ export class RoleGuard implements CanActivate {
     const findUser = await this.authRepository.findUserById(
       request.user.userId,
     );
+    if (!findUser) {
+      throw new UnauthorizedException('Unauthorized');
+    }
     return this.matchRoles(roles, findUser.accountData.role);
   }
 }
