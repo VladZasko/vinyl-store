@@ -38,10 +38,24 @@ export class RefreshTokenGuard implements CanActivate {
       ]);
     }
 
-    const user = await this.jwtService.verify(refreshToken, {
-      secret: this.configService.get('auth.JWT_SECRET'),
-    });
-
+    // const user = await this.jwtService.verify(refreshToken, {
+    //   secret: this.configService.get('auth.JWT_SECRET'),
+    // });
+    // if (!user) {
+    //   throw new UnauthorizedException(
+    //     'Access Denied. No refresh token provided.',
+    //   );
+    // }
+    let user;
+    try {
+      user = await this.jwtService.verify(refreshToken, {
+        secret: this.configService.get('auth.JWT_SECRET'),
+      });
+    } catch (err) {
+      throw new UnauthorizedException(
+        'Access Denied. No refresh token provided.',
+      );
+    }
     const refreshTokenMeta = await this.refreshTokenMetaModel.findOne({
       userId: user.userId,
     });
